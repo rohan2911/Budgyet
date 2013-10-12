@@ -1,8 +1,9 @@
 package models;
 
 import java.util.*;
-import play.db.ebean.*;
 
+import play.db.ebean.*;
+import play.db.ebean.Model.Finder;
 import play.data.validation.Constraints.*;
 
 import javax.persistence.*;
@@ -16,7 +17,7 @@ public class Task extends Model {
 	@Required
 	public String label;
 	
-	public static Finder<Long,Task> find = new Finder(Long.class, Task.class);
+	public static Finder<Long,Task> find = new Finder<Long, Task>(Long.class, Task.class);
 	
 	public static List<Task> all() {
 		return find.all();
