@@ -30,6 +30,10 @@ public class Account extends Model {
 		return find.all();
 	}
 	
+	public static boolean validateAccount(String username, String password) {
+		return true;
+	}
+	
 	public static void create(Account account) {
 		account.save();
 	}

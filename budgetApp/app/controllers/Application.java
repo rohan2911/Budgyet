@@ -33,5 +33,19 @@ public class Application extends Controller {
     	Task.delete(id);
     	return redirect(routes.Application.tasks());
     }
+    
+    public static Result login() {
+    	final DynamicForm form = DynamicForm.form().bindFromRequest();
+    	final String username = form.get("username");
+    	final String password = form.get("password");
+    	
+    	if (username.equals("rohan") && password.equals("password")) {
+    		return ok(bonus.render());
+    	} else {
+    		
+    	}
+    	
+    	return ok();
+    }
   
 }
