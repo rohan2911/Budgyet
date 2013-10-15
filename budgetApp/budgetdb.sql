@@ -1,12 +1,12 @@
 -- wip file
 create table accounts (
     id bigint not null auto_increment primary key,
-    username varchar(26),
+    username varchar(30) not null,
     email varchar(100) not null,
-    password text,
+    password varchar(30) not null,
 --    photo text,
-    firstname varchar(100),
-    lastname varchar(100)
+    first_name varchar(100),
+    last_name varchar(100)
 --    bio text
 );
 

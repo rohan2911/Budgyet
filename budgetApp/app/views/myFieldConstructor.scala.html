@@ -1,0 +1,11 @@
+@(elements: helper.FieldElements)
+<div class="form-group @if(elements.hasErrors) {error}"> 
+    @elements.input
+    @if(elements.hasErrors) {
+       	<center><span class="help-inline">@elements.errors.mkString(", ")</span></center>
+    } else {
+      	@if(elements.args.get('showConstraints).map{ _ == true}.getOrElse(true)){
+        	<span class="help-inline">@elements.infos.mkString(", ")</span>
+      	}
+    }
+</div>

@@ -3,12 +3,35 @@
 @import helper._
 
 @main("Budgyet") {
-
-    @form(action = routes.Accounts.login()) {
-    	<input type="text" name="username">
-    	<input type="password" name="password">
-    	@flash.get("fail")
-    	</br>
-    	<input type= "submit" name="submit" value="Log in">
-    }	
+	
+	<center><img src="@routes.Assets.at("images/header.jpg")"></center>
+	
+	@form(action = routes.Accounts.login(), 'id -> "loginForm", 'class -> "form-horizontal", 'role -> "form") {
+		<div class="form-group">
+			<input type="text" class="form-control formInputField" placeholder="Username">
+		</div>
+		<div class="form-group">
+			<input type="password" class="form-control formInputField" placeholder="Password">
+		</div>
+		@flash.get("fail")
+		  
+		<!-- Remember me checkbox -->
+		<div class="form-group">
+			<div class="col-lg-offset-8 col-lg-10">
+				<div class="checkbox">
+					<label>
+						<input type="checkbox"> Remember Me
+					</label>
+				</div>
+			</div>
+		</div>
+	
+		<div class="form-group">
+		    <center><button class="formButton" type="submit" class="btn btn-default">Log In</button></center>
+		</div>
+	}
+	
+	<!-- Sign up button -->
+	<center><a href="@routes.Accounts.register()"><button id="signUpButton" type="submit" class="btn btn-default">Sign Up</button></a></center>
+	
 }
