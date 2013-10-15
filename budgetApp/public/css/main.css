@@ -1,0 +1,86 @@
+body {background-color:#29c87c;}
+
+/* index.html ---------------- */
+
+#loginForm {
+    margin-left:auto;
+    margin-right:auto;
+    margin:auto;
+    width:600px;
+    text-align=center;
+    background-color:#c1c1c1;
+    padding:20px;
+}
+
+.formInputField {
+    margin:auto;   
+    width:500px;
+}
+
+.formButton {
+    width:500px;
+    background: #ec6859;
+    padding: 6px 12px;
+    color: white;   
+}
+
+#signUpButton {
+    margin-top:50px;
+    width:500px;
+    background: #ec6859;
+    padding: 6px 12px;
+    color: white;
+}
+#signUpButton:hover {
+    background: #d34f40;
+}
+#signUpButton:active {
+    background: #d34f40;
+}
+
+/* signup.html ---------------- */
+
+#registerForm {
+    margin-left:auto;
+    margin-right:auto;
+    width:800px;
+}
+
+/* home.html ---------------- */
+
+/* Sidebar pills background */
+#sidebarPill {
+    border-radius:6px;
+    background-color:#29c87c;
+}
+/* Non-active pill links */
+#sidebarPill > li > a,
+#sidebarPill > li > a:focus {
+    border-color:#c1c1c1;
+    background-color: #c1c1c1;
+    color: #333;
+}
+#sidebarPill > li > a:hover {
+    background-color: #dedede;
+    color: #000000;
+}
+/* Active pill links */
+#sidebarPill > li.active > a,
+#sidebarPill > li.active > a:hover,
+#sidebarPill > li.active > a:focus {
+    border-color:#ec6859;
+    background-color: #ec6859;
+    color: #000000;
+}
+
+.actionPill,
+.actionPill > li > a,
+.actionPill > li > a:focus {
+    border-color:#eb7b6f;
+    background-color:#eb7b6f;
+    color: #333;
+}
+.actionPill> li > a:hover {
+    background-color: #dedede;
+    color: #000000;
+}

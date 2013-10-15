@@ -20,7 +20,7 @@ public class Accounts extends Controller {
     		session("connected", username);
     		return ok(bonus.render());
     	} else {
-    		flash("fail", "incorrect username or password");
+    		flash("fail", "invalid username or password");
     		return redirect(routes.Application.index());
     	}
     }

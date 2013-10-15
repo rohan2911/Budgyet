@@ -22,6 +22,9 @@ public class Account {
 	@Required
 	public String password;
 	
+	public String first_name;
+	public String last_name;
+	
 	
 	public List<ValidationError> validate() {
 		List<ValidationError> errors = new ArrayList<ValidationError>();
@@ -36,6 +39,18 @@ public class Account {
 		
 		if (!email.matches("(?i)^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$")) {
 			errors.add(new ValidationError("email", "invalid email"));
+		}
+		
+		if (password.length() < 6 || username.length() > 30) {
+			errors.add(new ValidationError("password", "password must be between 6-30 characters long"));
+		}
+		
+		if (!first_name.matches("^[A-Za-z\\s-]*$")) {
+			errors.add(new ValidationError("first_name", "first name must contain only letters, spaces and hyphens"));
+		}
+		
+		if (!last_name.matches("^[A-Za-z\\s-]*$")) {
+			errors.add(new ValidationError("last_name", "last name must contain only letters, spaces and hyphens"));
 		}
 		
 		return errors.isEmpty() ? null : errors;
@@ -89,10 +104,12 @@ public class Account {
 		PreparedStatement ps = null;
 		boolean success = true;
 		try {
-			ps = connection.prepareStatement("INSERT INTO accounts (username, email, password) VALUES (?, ?, ?)");
+			ps = connection.prepareStatement("INSERT INTO accounts (username, email, password, first_name, last_name) VALUES (?, ?, ?, ?, ?)");
 			ps.setString(1, account.username);
 			ps.setString(2, account.email);
 			ps.setString(3, account.password);
+			ps.setString(4, account.first_name);
+			ps.setString(5, account.last_name);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			success = false;
