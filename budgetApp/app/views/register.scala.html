@@ -1,0 +1,16 @@
+@(registerForm: play.data.Form[Account])
+
+@import helper._
+
+@main("Budgyet Registration") {
+
+    <h2>Registration</h2>
+    
+    @form(action = routes.Accounts.addAccount()) {
+    	@inputText(registerForm("username"))
+    	@inputText(registerForm("email"))
+    	@inputPassword(registerForm("password"))
+    	</br>
+    	<input type= "submit" name="submit" value="Register">
+    }	
+}
