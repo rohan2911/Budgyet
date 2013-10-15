@@ -10,5 +10,13 @@
     	@flash.get("fail")
     	</br>
     	<input type= "submit" name="submit" value="Log in">
-    }	
+    }
+    
+    @form(action = routes.Expenses.addExpenses()) {
+		<input type = "text" name =  "label">
+		<input type = "number" name =  "value" value = "0.00">
+		<input type = "date " name =  "date">
+		</br>
+		<input type= "submit" name="submit" value="Log Expense">
+    }
 }
