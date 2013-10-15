@@ -18,6 +18,7 @@ public class Accounts extends Controller {
     	
     	if (Account.authenticate(username, password)) {
     		session("connected", username);
+    		// TODO go somewhere useful
     		return ok(bonus.render());
     	} else {
     		flash("fail", "invalid username or password");
@@ -25,12 +26,11 @@ public class Accounts extends Controller {
     	}
     }
     
-
     public static Result logout() {
-    	// destroy the session and return to index
     	session().clear();
     	return redirect(routes.Application.index());
     }
+    
     
     
     public static Result register() {
@@ -38,7 +38,6 @@ public class Accounts extends Controller {
     	return ok(register.render(registerForm));
     }
 	
-    
     public static Result addAccount() {
     	
     	Form<Account> accountForm = Form.form(Account.class);
