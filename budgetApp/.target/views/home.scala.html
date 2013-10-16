@@ -7,14 +7,66 @@
 	<h1>
 		Logged in as @session.get("connected")
 	</h1>	
-	
-	<div class="form-group">
-		@form(action = routes.Expenses.addExpense()) {
-			<input type="text" name="label">
-			<input type="number" name="value" value = "0.00">
-			<input type="date" name="date">
-			</br>
-			<input type= "submit" name="submit" value="Log Expense">
-	    }
-	</div>
+
+	@form(action = routes.Expenses.addExpense(),  'id -> "expenseForm", 'class -> "form-horizontal", 'role -> "form") {
+		
+		<div class="form-group">
+			<div class="input-group col-lg-4">
+			  	<span class="input-group-addon"><i class="glyphicon glyphicon-usd"></i></span>
+			  	<input type="text" class="form-control" name="expense_amount" placeholder="0.00">
+			</div>
+		</div>
+
+		<div class="form-group">
+		  	<div class="col-lg-4">
+		      	<input type="text" id="expense_tags" class="form-control" name="tags" placeholder="New Tags">
+		  	</div>
+	  	</div>
+	  	
+	  	<div class="form-group">
+	  		<div class="col-lg-4">
+		  		<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('food')">food</button>
+ 				<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('transport')">transport</button>
+ 				<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('present')">present</button>
+ 				<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('stationary')">stationary</button>				
+			</div>
+		</div>		
+
+
+		<div class="form-group">
+		  	<div class="col-lg-4">
+		  		<div class="input-group">
+		      		<input type="text" id="expense_datepicker" name="expense_date" class="form-control" size="16" value="17-08-2013" data-date-format="dd-mm-yyyy" readonly>
+		      		<span class="input-group-addon" onclick="pickExpenseDate()">
+		        		<i class="glyphicon glyphicon-calendar"></i>
+		      		</span>
+	      		</div>
+		  	</div>
+	  	</div>
+	  	
+	  	<div class="form-group">
+		  	<div class="col-lg-4">
+		  		<input type="text" name="description" class="form-control" placeholder="Description">
+		  	</div>
+	  	</div>
+
+		<input type="submit" class="btn btn-primary" name="submit" value="Log Expense">
+    }
+    <script>
+		$(document).ready(function() {
+			$('#expense_datepicker').datepicker();
+			$("#expense_tags").tagsManager({
+				hiddenTagListName: 'expense_tag_list'
+			});
+		});
+		function addExpenseTag(tag) {
+			$("#expense_tags").tagsManager('pushTag', tag);
+		}
+		function pickExpenseDate() {
+			$('#expense_datepicker').datepicker('show');
+		}
+	</script>
+
 }
+
+

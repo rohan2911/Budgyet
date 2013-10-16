@@ -12,9 +12,9 @@ public class Accounts extends Controller {
     public static Result login() {
     	
     	// retrieve form data
-    	final DynamicForm form = DynamicForm.form().bindFromRequest();
-    	final String username = form.get("username");
-    	final String password = form.get("password");
+    	DynamicForm form = DynamicForm.form().bindFromRequest();
+    	String username = form.get("username");
+    	String password = form.get("password");
     	
     	if (Account.authenticate(username, password)) {
     		session("connected", username);

@@ -10,9 +10,16 @@ import views.html.*;
 public class Expenses extends Controller {
 	
 	public static Result addExpense() {
-		Form<Expense> ExpenseForm = Form.form(Expense.class);
-		ExpenseForm = ExpenseForm.bindFromRequest();
-		Expense.add(ExpenseForm.get());
+		
+		DynamicForm form = DynamicForm.form().bindFromRequest();
+    	String amount = form.get("expense_amount");
+    	String tags = form.get("expense_tag_list");
+    	String date = form.get("expense_date");
+    	String description = form.get("description");
+		
+		System.out.println(tags);
+		System.out.println(date);
+		
 		return redirect(routes.Application.index());
 	}
 	

@@ -1,4 +1,7 @@
-body {background-color:#29c87c;}
+body {
+	background-color:#29c87c;
+	margin: 40px;	
+}
 
 /* index.html ---------------- */
 

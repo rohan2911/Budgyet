@@ -23,7 +23,7 @@ public class Expense {
 	@Required
 	public String date;
 	
-	public List<ValidationError> validate() {
+/*	public List<ValidationError> validate() {
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		
 		// check if values are set
@@ -48,7 +48,7 @@ public class Expense {
 		
 		
 		return errors.isEmpty() ? null : errors;
-	}
+	}*/
 	
 	public static boolean add(Expense expense) {
 		boolean success = true;
