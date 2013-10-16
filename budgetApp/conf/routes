@@ -12,7 +12,7 @@ GET		/logout						controllers.Accounts.logout()
 GET		/register					controllers.Accounts.register()
 POST	/register					controllers.Accounts.addAccount()
 
-POST	/addexpense					controllers.Expenses.addExpenses()
+POST	/addexpense					controllers.Expenses.addExpense()
 
 #GET	/tasks						controllers.Application.tasks()
 #POST	/tasks						controllers.Application.newTask()				

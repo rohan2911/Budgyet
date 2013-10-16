@@ -26,7 +26,7 @@ public class Expense {
 	public List<ValidationError> validate() {
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		
-		// check if vlaues are set
+		// check if values are set
 		
 		if (!name.matches("[^\\w]")) {
 			errors.add(new ValidationError("expense name", "expense name must contain only letters, digits and underscores"));

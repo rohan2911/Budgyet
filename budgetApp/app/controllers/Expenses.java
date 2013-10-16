@@ -9,7 +9,7 @@ import views.html.*;
 
 public class Expenses extends Controller {
 	
-	static Result addExpense() {
+	public static Result addExpense() {
 		Form<Expense> ExpenseForm = Form.form(Expense.class);
 		ExpenseForm = ExpenseForm.bindFromRequest();
 		Expense.add(ExpenseForm.get());
