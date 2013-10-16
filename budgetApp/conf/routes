@@ -11,7 +11,9 @@ GET		/logout						controllers.Accounts.logout()
 
 GET		/register					controllers.Accounts.register()
 POST	/register					controllers.Accounts.addAccount()
-			
+
+POST	/addexpense					controllers.Expenses.addExpense()
+
 #POST	/tasks/:id/delete			controllers.Application.deleteTask(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path

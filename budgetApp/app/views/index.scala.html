@@ -34,4 +34,14 @@
 	<!-- Sign up button -->
 	<center><a href="@routes.Accounts.register()"><button id="signUpButton" type="submit" class="btn btn-default">Sign Up</button></a></center>
 	
+	<div class="form-group">
+		@form(action = routes.Expenses.addExpense()) {
+			<input type = "text" name =  "label">
+			<input type = "number" name =  "value" value = "0.00">
+			<input type = "date " name =  "date">
+			</br>
+			<input type= "submit" name="submit" value="Log Expense">
+	    }
+	</div>
+	
 }
