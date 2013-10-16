@@ -19,7 +19,8 @@ public class Accounts extends Controller {
     	if (Account.authenticate(username, password)) {
     		session("connected", username);
     		// TODO go somewhere useful
-    		return ok(bonus.render());
+    		//return redirect(routes.Application.index());
+    		return ok(home.render());
     	} else {
     		flash("fail", "invalid username or password");
     		return redirect(routes.Application.index());
