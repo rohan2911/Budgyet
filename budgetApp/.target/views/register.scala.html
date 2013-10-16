@@ -1,0 +1,25 @@
+@(registerForm: play.data.Form[Account])
+
+@import helper._
+
+@implicitField = @{ FieldConstructor(myFieldConstructor.f) }
+
+@main("Budgyet Registration") {
+
+	<center><img src="@routes.Assets.at("images/header.jpg")"></center>
+        
+    @form(action = routes.Accounts.addAccount(), 'id -> "registerForm", 'class -> "form-horizontal", 'role -> "form") {
+    	
+    	@inputTextField(registerForm("username"), 'placeholder -> "Username", 'showConstraints -> false)
+    	@inputEmailField(registerForm("email"), 'placeholder -> "Email", 'showConstraints -> false)
+    	@inputPasswordField(registerForm("password"), 'placeholder -> "Password", 'showConstraints -> false)
+		@inputTextField(registerForm("first_name"), 'placeholder -> "First Name", 'showConstraints -> false)
+		@inputTextField(registerForm("last_name"), 'placeholder -> "Last Name", 'showConstraints -> false)
+
+		<div class="form-group">
+			<center><button class="formButton" type="submit" class="btn btn-default">Register</button></center>
+		</div>
+    
+    }
+
+}
