@@ -36,9 +36,9 @@
 	
 	<div class="form-group">
 		@form(action = routes.Expenses.addExpense()) {
-			<input type = "text" name =  "label">
+			<input type = "text" name =  "name">
 			<input type = "number" name =  "value" value = "0.00">
-			<input type = "date " name =  "date">
+			<input type = "text" name =  "date">
 			</br>
 			<input type= "submit" name="submit" value="Log Expense">
 	    }

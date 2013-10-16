@@ -30,10 +30,10 @@ create table accounts (
 --    foreign key (owner) references users(id)    
 -- };
 
- create table expenses {
+ create table expenses (
     id integer not null auto_increment primary key,
-    name varchar(128),
-    value decimal(20, 2),
-    date varchar(10)
+    description varchar(128),
+    amount decimal(20, 2),
+    expense_date bigint(10)
 --    foreign key (category) references categories(id)  
- };
+ );
