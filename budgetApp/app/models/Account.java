@@ -90,22 +90,22 @@ public class Account {
 		return success;
 	}
 
-	public static boolean authenticate(String username, String password) {
+	public static long authenticate(String username, String password) {
 		Connection connection = DB.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		boolean success = false;
+		long id = 0;
 		
 		try {
-			ps = connection.prepareStatement("SELECT 1 FROM accounts WHERE username = ? AND password = ?");
+			ps = connection.prepareStatement("SELECT id FROM accounts WHERE username = ? AND password = ?");
 			ps.setString(1, username);
 			ps.setString(2, password);
 			rs = ps.executeQuery();
 			if (rs.next()) {
-				success = true;
+				id = rs.getLong("id");
 			}
 		} catch (SQLException e) {
-			success = false;
+			id = 0;
 			e.printStackTrace();
 		} finally {
 			try {
@@ -120,7 +120,7 @@ public class Account {
 				e.printStackTrace();
 			}
 		}
-		return success;
+		return id;
 	}
 
 	public static boolean uniqueUsername(String username) {

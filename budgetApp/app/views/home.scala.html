@@ -5,7 +5,7 @@
 @main("Budgyet") {
 	
 	<h1>
-		Logged in as @session.get("connected")
+		Logged in as @session.get("connected_username")
 	</h1>	
 
 	@form(action = routes.Expenses.addExpense(),  'id -> "expenseForm", 'class -> "form-horizontal", 'onSubmit -> "return checkExpenseTag(this)", 'role -> "form") {
