@@ -1,0 +1,44 @@
+@()
+
+@import helper._
+
+@main("Budgyet") {
+	
+	<h1>
+		Logged in as @session.get("connected")
+	</h1>	
+	
+	<div class="form-group">
+		@form(action = routes.Expenses.addExpense()) {
+			<input type="text" name="description" value = "description">
+			<input type="number" name="amount" value = "0.00">
+			</br>
+			<input type="number" name="day">
+			<input type="number" name="month">
+			<input type="number" name="year">
+			</br>
+			<input type= "submit" name="submit" value="Log Expense">
+	    }
+	</div>
+}
+
+create table expenses (
+    id bigint not null auto_increment,
+    owner bigint not null,
+    amount decimal(20, 2),
+    description text,
+    expense_date bigint,
+    
+    primary key (id),
+	foreign key (owner) references accounts(id)
+);
+
+create table expense_tags (
+	id bigint not null auto_increment,
+	owner bigint,
+	name varchar(16),
+	
+	primary key (id),
+	foreign key (owner) references accounts(id)
+);
+

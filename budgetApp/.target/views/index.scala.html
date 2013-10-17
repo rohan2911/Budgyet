@@ -8,10 +8,10 @@
 	
 	@form(action = routes.Accounts.login(), 'id -> "loginForm", 'class -> "form-horizontal", 'role -> "form") {
 		<div class="form-group">
-			<input type="text" class="form-control formInputField" placeholder="Username">
+			<input type="text" class="form-control formInputField" name="username" placeholder="Username">
 		</div>
 		<div class="form-group">
-			<input type="password" class="form-control formInputField" placeholder="Password">
+			<input type="password" class="form-control formInputField" name="password" placeholder="Password">
 		</div>
 		@flash.get("fail")
 		  
@@ -33,5 +33,5 @@
 	
 	<!-- Sign up button -->
 	<center><a href="@routes.Accounts.register()"><button id="signUpButton" type="submit" class="btn btn-default">Sign Up</button></a></center>
-	
+
 }

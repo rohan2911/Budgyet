@@ -9,7 +9,7 @@ public class Application extends Controller {
     public static Result index() {
     	String username = session("connected");
     	if (username != null) {
-    		return ok(bonus.render());
+    		return ok(home.render());
     	} else {
     		return ok(index.render());
     	}
