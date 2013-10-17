@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import play.data.validation.Constraints.Required;
@@ -14,14 +15,10 @@ import play.db.DB;
 
 public class Expense {
 	
-	@Required
-	public String value;
-	
-	@Required
-	public String name;
-	
-	@Required
-	public String date;
+	public BigDecimal amount;
+	public List<String> tags;
+	public Date income_date;
+	public String description;
 	
 /*	public List<ValidationError> validate() {
 		List<ValidationError> errors = new ArrayList<ValidationError>();
@@ -50,7 +47,7 @@ public class Expense {
 		return errors.isEmpty() ? null : errors;
 	}*/
 	
-	public static boolean add(Expense expense) {
+	/*public static boolean add(Expense expense) {
 		boolean success = true;
 		Connection connection = DB.getConnection();
 		
@@ -78,6 +75,10 @@ public class Expense {
 			}
 		}
 		return success;
+	}*/
+	
+	public static boolean add(Expense expense) {
+		return false;
 	}
 	
 }

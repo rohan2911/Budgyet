@@ -36,7 +36,7 @@ create table incomes (
 	owner bigint not null,
 	amount decimal(20, 2),
     description text,
-    income_date bigint,
+    income_date date,
 	
 	primary key (id),
 	foreign key (owner) references accounts(id)
@@ -69,7 +69,7 @@ create table expenses (
     owner bigint not null,
     amount decimal(20, 2),
     description text,
-    expense_date bigint,
+    expense_date date,
     
     primary key (id),
 	foreign key (owner) references accounts(id)
