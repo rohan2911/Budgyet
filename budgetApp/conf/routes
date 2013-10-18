@@ -12,6 +12,8 @@ GET		/logout						controllers.Accounts.logout()
 GET		/register					controllers.Accounts.register()
 POST	/register					controllers.Accounts.addAccount()
 
+POST	/addincome					controllers.Incomes.addIncome()
+
 POST	/addexpense					controllers.Expenses.addExpense()
 
 #POST	/tasks/:id/delete			controllers.Application.deleteTask(id: Long)

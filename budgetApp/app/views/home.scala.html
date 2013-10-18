@@ -7,38 +7,168 @@
 	<h1>
 		Logged in as @session.get("connected")
 	</h1>	
+
+	@form(action = routes.Expenses.addExpense(),  'id -> "expenseForm", 'class -> "form-horizontal", 'onSubmit -> "return checkExpenseTag(this)", 'role -> "form") {
+		
+		<div class="form-group">
+			<div class="col-lg-4">
+		  		<input type="text" name="expense_amount" value="1.00">
+	  		</div>
+		</div>
+
+		<div class="form-group">
+		  	<div class="col-lg-4">
+		      	<input type="text" id="expense_tags" class="form-control" name="tags" placeholder="New Tags">
+		  	</div>
+	  	</div>
+	  	
+	  	<div class="form-group">
+	  		<div class="col-lg-4">
+		  		<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('food')">food</button>
+ 				<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('transport')">transport</button>
+ 				<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('present')">present</button>
+ 				<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('stationary')">stationary</button>				
+			</div>
+		</div>		
+
+
+		<div class="form-group">
+		  	<div class="col-lg-4">
+		  		<div class="input-group">
+		      		<input type="text" id="expense_datepicker" name="expense_date" class="form-control" size="16" value="2013-08-17" data-date-format="yyyy-mm-dd" readonly>
+		      		<span class="input-group-addon" onclick="pickExpenseDate()">
+		        		<i class="glyphicon glyphicon-calendar"></i>
+		      		</span>
+	      		</div>
+		  	</div>
+	  	</div>
+	  	
+	  	<div class="form-group">
+		  	<div class="col-lg-4">
+		  		<input type="text" name="description" class="form-control" placeholder="Description">
+		  	</div>
+	  	</div>
+	  	
+		<div class="form-group">
+			<input type="submit" class="btn btn-primary" name="submit" value="Log Expense">
+		</div>
+    }
 	
-	<div class="form-group">
-		@form(action = routes.Expenses.addExpense()) {
-			<input type="text" name="description" value = "description">
-			<input type="number" name="amount" value = "0.00">
-			</br>
-			<input type="number" name="day">
-			<input type="number" name="month">
-			<input type="number" name="year">
-			</br>
-			<input type= "submit" name="submit" value="Log Expense">
-	    }
-	</div>
+	
+	
+	
+	@form(action = routes.Incomes.addIncome(),  'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkIncomeTag(this)", 'role -> "form") {
+		
+		<div class="form-group">
+			<div class="col-lg-4">
+		  		<input type="text" name="income_amount" value="1.00">
+	  		</div>
+		</div>
+
+		<div class="form-group">
+		  	<div class="col-lg-4">
+		      	<input type="text" id="income_tags" class="form-control" name="tags" placeholder="New Tags">
+		  	</div>
+	  	</div>
+	  	
+	  	<div class="form-group">
+	  		<div class="col-lg-4">
+		  		<button type="button" class="btn btn-default btn-sm" onclick="addIncomeTag('ebay')">ebay</button>
+ 				<button type="button" class="btn btn-default btn-sm" onclick="addIncomeTag('steam')">steam</button>
+ 				<button type="button" class="btn btn-default btn-sm" onclick="addIncomeTag('freelance')">freelance</button>
+ 				<button type="button" class="btn btn-default btn-sm" onclick="addIncomeTag('ibm')">ibm</button>				
+			</div>
+		</div>		
+
+
+		<div class="form-group">
+		  	<div class="col-lg-4">
+		  		<div class="input-group">
+		      		<input type="text" id="income_datepicker" name="income_date" class="form-control" size="16" value="2013-08-17" data-date-format="yyyy-mm-dd" readonly>
+		      		<span class="input-group-addon" onclick="pickIncomeDate()">
+		        		<i class="glyphicon glyphicon-calendar"></i>
+		      		</span>
+	      		</div>
+		  	</div>
+	  	</div>
+	  	
+	  	<div class="form-group">
+		  	<div class="col-lg-4">
+		  		<input type="text" name="description" class="form-control" placeholder="Description">
+		  	</div>
+	  	</div>
+	  	
+		<div class="form-group">
+			<input type="submit" class="btn btn-primary" name="submit" value="Log Income">
+		</div>
+    }
+    <script>
+		$(document).ready(function() {
+
+			$("input[name='income_amount']").TouchSpin({
+				min: 0.01,
+				max: 1000000000,
+		        step: 0.1,
+		        decimals: 2,
+		        boostat: 5,
+		        maxboostedstep: 10,
+		        prefix: '$'
+			});
+
+			$("input[name='expense_amount']").TouchSpin({
+				min: 0.01,
+				max: 1000000000,
+		        step: 0.1,
+		        decimals: 2,
+		        boostat: 5,
+		        maxboostedstep: 10,
+		        prefix: '$'
+			});
+
+			$('#income_datepicker').datepicker();
+			$('#expense_datepicker').datepicker();
+
+			$("#income_tags").tagsManager({
+				hiddenTagListName: 'income_tag_list'
+			});
+			$("#expense_tags").tagsManager({
+				hiddenTagListName: 'expense_tag_list'
+			});
+		});
+
+
+		function addIncomeTag(tag) {
+			$("#income_tags").tagsManager('pushTag', tag);
+		}
+		function pickIncomeDate() {
+			$('#income_datepicker').datepicker('show');
+		}
+		
+		function addExpenseTag(tag) {
+			$("#expense_tags").tagsManager('pushTag', tag);
+		}
+		function pickExpenseDate() {
+			$('#expense_datepicker').datepicker('show');
+		}
+
+		function checkIncomeTag(f) {
+			if ($("#income_tags").tagsManager('tags').tags.length == 0) {
+				alert("no tags");
+				return false;
+			} else {
+				f.submit();
+				return false;
+			}
+		}
+		function checkExpenseTag(f) {
+			if ($("#expense_tags").tagsManager('tags').tags.length == 0) {
+				alert("Please select at least one tag");
+				return false;
+			} else {
+				f.submit();
+				return false;
+			}
+		}
+		
+	</script>
 }
-
-create table expenses (
-    id bigint not null auto_increment,
-    owner bigint not null,
-    amount decimal(20, 2),
-    description text,
-    expense_date bigint,
-    
-    primary key (id),
-	foreign key (owner) references accounts(id)
-);
-
-create table expense_tags (
-	id bigint not null auto_increment,
-	owner bigint,
-	name varchar(16),
-	
-	primary key (id),
-	foreign key (owner) references accounts(id)
-);
-

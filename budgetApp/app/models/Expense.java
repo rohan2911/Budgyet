@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import play.data.validation.Constraints.Required;
@@ -14,25 +15,12 @@ import play.db.DB;
 
 public class Expense {
 	
-	@Required
-	public String amount;
-	
-	@Required
+	public BigDecimal amount;
+	public List<String> tags;
+	public Date income_date;
 	public String description;
 	
-/*	@Required
-	public String date;*/
-	
-	@Required
-	public int year;
-	
-	@Required
-	public int month;
-	
-	@Required
-	public int day;
-	
-	public List<ValidationError> validate() {
+/*	public List<ValidationError> validate() {
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		
 		// check if amounts are set
@@ -49,19 +37,18 @@ public class Expense {
 			errors.add(new ValidationError("expense amount", "expense amount is too large"));
 		}
 		
-/*		if (!date.matches("\\d{2}[-\\/]\\d{2}[-\\/]\\d{4}")) {
+		if (!date.matches("\\d{2}[-\\/]\\d{2}[-\\/]\\d{4}")) {
 			errors.add(new ValidationError("expense date", "expense date provided not a valid date"));
 		} else if (amount.length() > 10){
 			errors.add(new ValidationError("expense date", "expense date provided not a valid date"));
-		}*/
-		
+		}	
 		
 		
 		
 		return errors.isEmpty() ? null : errors;
-	}
+	}*/
 	
-	public static boolean add(Expense expense) {
+	/*public static boolean add(Expense expense) {
 		boolean success = true;
 		Connection connection = DB.getConnection();
 		
@@ -89,6 +76,10 @@ public class Expense {
 			}
 		}
 		return success;
+	}*/
+	
+	public static boolean add(Expense expense) {
+		return false;
 	}
 	
 }
