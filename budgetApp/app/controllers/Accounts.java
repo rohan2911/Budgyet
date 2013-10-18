@@ -16,8 +16,11 @@ public class Accounts extends Controller {
     	String username = form.get("username");
     	String password = form.get("password");
     	
-    	if (Account.authenticate(username, password)) {
-    		session("connected", username);
+    	long id = Account.authenticate(username, password);
+    	
+    	if (id != 0) {
+    		session("connected_username", username);
+    		session("connected_id", Long.toString(id));
     		// TODO go somewhere useful
     		//return redirect(routes.Application.index());
     		return ok(home.render());

@@ -1,5 +1,9 @@
 package controllers;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import models.Income;
 import play.data.DynamicForm;
 import play.mvc.Controller;
@@ -19,10 +23,12 @@ public class Incomes extends Controller {
 		System.out.println("tagslength = " + tags.length());
 		System.out.println("date = " + date);*/
 		
-		Income income = new Income(amount, tags, date, description);
-		System.out.println("tag isempty = " + income.tags.isEmpty());
+		Income income = new Income(session().get("connected_id"), amount, tags, date, description);
+		Income.add(income);
 	
 		return redirect(routes.Application.index());
 	}
 	
+	
 }
+
