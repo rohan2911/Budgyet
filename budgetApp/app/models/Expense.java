@@ -1,13 +1,17 @@
 package models;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 import play.data.validation.Constraints.Required;
 import play.data.validation.ValidationError;
@@ -15,10 +19,27 @@ import play.db.DB;
 
 public class Expense {
 	
+	public long owner;
+	
 	public BigDecimal amount;
 	public List<String> tags;
 	public Date income_date;
 	public String description;
+	public Boolean repeating;
+	public 
+	
+	public Expense(String owner, String amount, String tags, String date, String description) {
+		this.owner = Long.parseLong(owner);
+		this.amount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
+		this.tags = new ArrayList<String>(Arrays.asList(tags.split(",")));
+		try {
+			this.income_date = new SimpleDateFormat("yyyy-MM-dd").parse(date);
+		} catch (ParseException e){
+			this.income_date = null;
+			e.printStackTrace();
+		}
+		this.description = description;
+	}
 	
 /*	public List<ValidationError> validate() {
 		List<ValidationError> errors = new ArrayList<ValidationError>();
@@ -48,7 +69,7 @@ public class Expense {
 		return errors.isEmpty() ? null : errors;
 	}*/
 	
-	/*public static boolean add(Expense expense) {
+/*	public static boolean add(Expense expense) {
 		boolean success = true;
 		Connection connection = DB.getConnection();
 		
@@ -60,6 +81,7 @@ public class Expense {
 			ps.setBigDecimal(2, new BigDecimal(expense.amount));
 			ps.setString(3, expense.date);
 			ps.executeQuery();
+			
 		} catch (SQLException e) {
 			success = false;
 			e.printStackTrace();
@@ -77,9 +99,5 @@ public class Expense {
 		}
 		return success;
 	}*/
-	
-	public static boolean add(Expense expense) {
-		return false;
-	}
 	
 }
