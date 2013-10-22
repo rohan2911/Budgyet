@@ -1,9 +1,9 @@
 package controllers;
 
+import models.Expense;
 import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.*;
 
 public class Expenses extends Controller {
 	
@@ -13,11 +13,13 @@ public class Expenses extends Controller {
     	String amount = form.get("expense_amount");
     	String tags = form.get("expense_tag_list");
     	String date = form.get("expense_date");
-    	String description = form.get("description");
+    	String description = form.get("expense_description");
 		
-		System.out.println(tags);
-		System.out.println(date);
+    	String repeat = form.get("expense_repeat");
 		
+    	Expense expense = new Expense(session().get("connected_id"), amount, tags, date, description);
+		Expense.add(expense);
+    	
 		return redirect(routes.Application.index());
 	}
 	

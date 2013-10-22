@@ -1,8 +1,8 @@
 -- wip file
 create table accounts (
     id bigint not null auto_increment,
-    username varchar(30) not null,
-    email varchar(100) not null,
+    username varchar(30) not null unique,
+    email varchar(100) not null unique,
     password varchar(30) not null,
     first_name varchar(100),
     last_name varchar(100),
@@ -34,15 +34,15 @@ create table accounts (
 create table incomes (
 	id bigint not null auto_increment,
 	owner bigint not null,
-	amount decimal(20, 2),
-    description text,
-    income_date date,
+	amount decimal(16, 2),
+    description varchar(256),
+    date_occur date,
 	
 	primary key (id),
 	foreign key (owner) references accounts(id)
 );
 
-create table income_tags (
+create table incomes_tags (
 	id bigint not null auto_increment,
 	owner bigint not null,
 	name varchar(16),
@@ -51,13 +51,13 @@ create table income_tags (
 	foreign key (owner) references accounts(id)
 );
 
-create table income_tags_map (
+create table incomes_tags_map (
 	income bigint not null,
 	tag bigint not null,
 	
 	primary key (income, tag),
 	foreign key (income) references incomes(id),
-	foreign key (tag) references income_tags(id)
+	foreign key (tag) references incomes_tags(id)
 );
 
 
@@ -67,15 +67,15 @@ create table income_tags_map (
 create table expenses (
     id bigint not null auto_increment,
     owner bigint not null,
-    amount decimal(20, 2),
-    description text,
-    expense_date date,
+    amount decimal(16, 2),
+    description varchar(256),
+    date_occur date,
     
     primary key (id),
 	foreign key (owner) references accounts(id)
 );
 
-create table expense_tags (
+create table expenses_tags (
 	id bigint not null auto_increment,
 	owner bigint,
 	name varchar(16),
@@ -84,11 +84,11 @@ create table expense_tags (
 	foreign key (owner) references accounts(id)
 );
 
-create table expense_tags_map (
+create table expenses_tags_map (
 	expense bigint not null,
 	tag bigint not null,
 
 	primary key (expense, tag),
 	foreign key (expense) references expenses(id),
-	foreign key (tag) references expense_tags(id)
+	foreign key (tag) references expenses_tags(id)
 );
