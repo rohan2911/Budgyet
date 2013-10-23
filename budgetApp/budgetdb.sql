@@ -10,12 +10,6 @@ create table accounts (
     primary key (id)
 );
 
--- create table budgets {
---    id integer not null auto_increment primary key,
---    title varchar(100),
---    "desc" varchar (1000),
---    -- period  -- time period alloc'd? not sure
--- };
 
 -- create table goals {
 --    id integer not null auto_increment primary key,
@@ -90,5 +84,29 @@ create table expenses_tags_map (
 
 	primary key (expense, tag),
 	foreign key (expense) references expenses(id),
+	foreign key (tag) references expenses_tags(id)
+);
+
+
+
+create table budgets (
+	id bigint not null auto_increment,
+	owner bigint not null,
+	title varchar(100),
+	amount decimal(16, 2),
+    description varchar(256),
+    date_start date,
+    date_end date,
+	
+	primary key (id),
+	foreign key (owner) references accounts(id)
+);
+
+create table budgets_tags_map (
+	budget bigint not null,
+	tag bigint not null,
+
+	primary key (budget, tag),
+	foreign key (budget) references budgets(id),
 	foreign key (tag) references expenses_tags(id)
 );

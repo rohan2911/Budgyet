@@ -14,6 +14,7 @@ public class Global extends GlobalSettings {
 	public void onStart(Application app) {
         Logger.info("Application has started");
         
+        // does run every 5 sec, checker for recurring things
         /*Akka.system().scheduler().schedule(Duration.create(0, TimeUnit.MILLISECONDS),
         		Duration.create(5, TimeUnit.SECONDS),
         		  	new Runnable() {

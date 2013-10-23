@@ -8,7 +8,7 @@
 		Logged in as @session.get("connected_username")
 	</h1>	
 
-	@form(action = routes.Expenses.addExpense(), 'id -> "expenseForm", 'class -> "form-horizontal", 'onSubmit -> "return checkExpenseTag(this)", 'role -> "form") {
+	@form(action = routes.Expenses.addExpense(), 'id -> "expenseForm", 'class -> "form-horizontal", 'onSubmit -> "return checkExpenseSubmit(this)", 'role -> "form") {
 		
 		<div class="form-group">
 			<div class="col-lg-4">
@@ -67,7 +67,7 @@
 		</div>
     }
 	
-	@form(action = routes.Incomes.addIncome(), 'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkIncomeTag(this)", 'role -> "form") {
+	@form(action = routes.Incomes.addIncome(), 'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkIncomeSubmit(this)", 'role -> "form") {
 		
 		<div class="form-group">
 			<div class="col-lg-4">
@@ -126,7 +126,13 @@
 		</div>
     }
     
-    @form(action = routes.Budgets.addBudget(), 'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkBudgetTag(this)", 'role -> "form") {
+    @form(action = routes.Budgets.addBudget(), 'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkBudgetSubmit(this)", 'role -> "form") {
+		
+		<div class="form-group">
+			<div class="col-lg-4">
+		  		<input type="text" id="budget_title" class="form-control" name="budget_title" placeholder="Title" maxlength="100">
+	  		</div>
+		</div>
 		
 		<div class="form-group">
 			<div class="col-lg-4">
@@ -192,7 +198,7 @@
 		</div>
 	  	
 		<div class="form-group">
-			<input type="submit" class="btn btn-primary" name="submit" value="Log Income">
+			<input type="submit" class="btn btn-primary" name="submit" value="Create Budget">
 		</div>
     }
     
@@ -250,7 +256,7 @@
 
 			var budget_end = $('#budget_end_datepicker').datepicker({
 				onRender: function(date) {
-				  	return date.valueOf() <= budget_start.date.valueOf() ? 'disabled' : '';
+				  	return date.valueOf() < budget_start.date.valueOf() ? 'disabled' : '';
 				}
 			}).on('onRender', function(date) {
 				return date.valueOf() <= budget_start.date.valueOf() ? 'disabled' : '';
@@ -287,16 +293,16 @@
 			$("#budget_tags").tagsManager('pushTag', tag);
 		}
 
-		function checkIncomeTag(f) {
+		function checkIncomeSubmit(f) {
 			if ($("#income_tags").tagsManager('tags').tags.length == 0) {
-				alert("no tags");
+				alert("Please select at least one tag");
 				return false;
 			} else {
 				f.submit();
 				return false;
 			}
 		}
-		function checkExpenseTag(f) {
+		function checkExpenseSubmit(f) {
 			if ($("#expense_tags").tagsManager('tags').tags.length == 0) {
 				alert("Please select at least one tag");
 				return false;
@@ -305,7 +311,11 @@
 				return false;
 			}
 		}
-		function checkBudgetTag(f) {
+		function checkBudgetSubmit(f) {
+			if ($("#budget_title").val().trim().length == 0) {
+				alert("Please enter a title");
+				return false;
+			}
 			if ($("#budget_tags").tagsManager('tags').tags.length == 0) {
 				alert("Please select at least one tag");
 				return false;
