@@ -150,7 +150,114 @@ public class Budget {
 		return true;
 
 	}
-
+	
+	/*
+	 * return list of budgets for the user
+	 * for each budget,
+	 * 		get its associated tags, 
+	 * 		get expenses with those tags, 
+	 * 		for each expense amount, add to total $ spent
+	 * 		then get total expenditure
+	 * 
+	 * select * from budgets where owner = owner
+	 * 		
+	 */
+	public static List<BudgetBar> getProgressBudgets(String owner) {
+		Connection connection = DB.getConnection();
+		PreparedStatement ps1 = null;
+		PreparedStatement ps2 = null;
+		PreparedStatement ps3 = null;
+		ResultSet rs1 = null;
+		ResultSet rs2 = null;
+		ResultSet rs3 = null;
+		
+		List<BudgetBar> budgetBars = new ArrayList<BudgetBar>();
+		
+		try {
+			ps1 = connection.prepareStatement("select * from budgets where owner = ?");
+			ps1.setLong(1, Long.parseLong(owner));
+			rs1 = ps1.executeQuery();
+			// fill up a list of BudgetBars here to give to play
+			while(rs1.next()) {
+				BudgetBar bb = new BudgetBar();
+				bb.setId(rs1.getLong("id"));
+				bb.setAmount(rs1.getBigDecimal("amount"));
+				bb.setDateStart(rs1.getDate("date_start").toString());
+				bb.setDateEnd(rs1.getDate("date_end").toString());
+				bb.setTitle(rs1.getString("title"));
+				
+				// need to calculate progress here for the budget
+				// 1. get this budget's tags
+				// select tag from budgets_tags_map join expenses_tags on tag = id where budget = '2';
+				ps2 = connection.prepareStatement("select tag from budgets_tags_map "
+						+ "join expenses_tags on tag = id where budget = ?;");
+				ps2.setLong(1, bb.getId());
+				rs2 = ps2.executeQuery();
+				
+				// get list of tag ids
+				List<Long> tag_ids = new ArrayList<Long>();
+				while (rs2.next()) {
+					// has tag ids
+					tag_ids.add(rs2.getLong("tag"));
+				}
+				
+				String sql3 = "select amount from expenses join expenses_tags_map on id = expense where (tag = ?";
+				for (int i=0; i<tag_ids.size()-1; i++) {
+					sql3 += " OR tag = ?";
+				}
+				sql3 += ") and date_occur >= ? and date_occur <= ?";
+				ps3 = connection.prepareStatement(sql3);
+				int i=1;
+				for (; i<=tag_ids.size(); i++) {
+					ps3.setLong(i, tag_ids.get(i-1));
+				}
+				ps3.setString(i, bb.getDateStart());
+				ps3.setString(i+1, bb.getDateEnd());
+				rs3 = ps3.executeQuery();
+				
+				BigDecimal totalAmt = new BigDecimal("0.00").setScale(2, RoundingMode.HALF_UP);
+				while(rs3.next()) {
+					totalAmt = totalAmt.add(rs3.getBigDecimal("amount"));
+				}
+				bb.setProgress(totalAmt);
+				
+				// insert into list
+				budgetBars.add(bb);
+			}
+			
+		} catch (SQLException e) {
+//			success = false;
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs1 != null) {
+					rs1.close();
+				}
+				if (rs2 != null) {
+					rs2.close();
+				}
+				if (rs3 != null) {
+					rs3.close();
+				}
+				if (ps1 != null) {
+					ps1.close();
+				}
+				if (ps2 != null) {
+					ps2.close();
+				}
+				if (ps3 != null) {
+					ps3.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return budgetBars;
+	}
 }
 
 

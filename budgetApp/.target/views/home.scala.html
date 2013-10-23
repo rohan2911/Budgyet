@@ -1,12 +1,43 @@
-@()
+@(budgets: List[BudgetBar])
 
 @import helper._
 
 @main("Budgyet") {
 	
-	<h1>
-		Logged in as @session.get("connected_username")
-	</h1>	
+	<!-- Navbar -->
+	<nav class="navbar navbar-default" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="@routes.Application.index()"><img src="@routes.Assets.at("images/logo.png")" height="16"></a>
+		</div>
+		
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse navbar-ex1-collapse">
+			<ul class="nav navbar-nav">
+				<li><a href="budgets.html">Budgets</a></li>
+				<li><a href="income.html">Income</a></li>
+				<li><a href="expenses.html">Expenses</a></li>
+			</ul>
+			  
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#">@session.get("connected_username")</a></li>
+				<li><a href="@routes.Accounts.logout()">Logout</a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</nav>
+	
+	@for(budget <- budgets) {
+		<h3>@budget.getTitle()</h3>
+		<div class="progress">
+			<div class="progress-bar progress-bar-info" role="progressbar" aria-valuetransitiongoal="@budget.getProgress()" aria-valuemin="0" aria-valuemax="@budget.getAmount()"></div>
+		</div>
+	}
 
 	@form(action = routes.Expenses.addExpense(), 'id -> "expenseForm", 'class -> "form-horizontal", 'onSubmit -> "return checkExpenseSubmit(this)", 'role -> "form") {
 		
@@ -205,6 +236,11 @@
     <script>
 		$(document).ready(function() {
 
+			$('.progress .progress-bar').progressbar({
+			    display_text: 'center',
+			    use_percentage: false
+			});
+			
 			$("input[name='income_amount']").TouchSpin({
 				min: 0.01,
 				max: 99999999999999.99,

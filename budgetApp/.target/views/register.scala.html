@@ -6,9 +6,15 @@
 
 @main("Budgyet Registration") {
 
-	<center><img src="@routes.Assets.at("images/header.jpg")"></center>
+	<center><img src="@routes.Assets.at("images/logo.png")"></center>
         
-    @form(action = routes.Accounts.addAccount(), 'id -> "registerForm", 'class -> "form-horizontal", 'role -> "form") {
+    @form(action = routes.Accounts.addAccount(), 'id -> "registerForm", 'class -> "form-horizontal loginForm", 'role -> "form") {
+    	
+    	<div class="form-group">
+			<span class="loginSignupToggle alignRight">
+				<a href="@routes.Application.index()">Login</a> | <strong>Signup</strong>
+			</span>
+		</div>
     	
     	@inputTextField(registerForm("username"), 'placeholder -> "Username", 'showConstraints -> false)
     	@inputEmailField(registerForm("email"), 'placeholder -> "Email", 'showConstraints -> false)

@@ -23,7 +23,7 @@ public class Accounts extends Controller {
     		session("connected_id", Long.toString(id));
     		// TODO go somewhere useful
     		//return redirect(routes.Application.index());
-    		return ok(home.render());
+    		return redirect(routes.Application.index());
     	} else {
     		flash("fail", "invalid username or password");
     		return redirect(routes.Application.index());

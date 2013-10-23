@@ -1,55 +1,154 @@
 body {
-	background-color:#29c87c;
-	margin: 40px;	
+    margin: 40px;
+    background-color:#d0edce;
+    color:#444;
+    font-family:"Lucida Sans Unicode";
 }
 
-/* index.html ---------------- */
+a:link,
+a:visited,
+a:active {
+    color:#444;
+    text-decoration:none;
+}
+a:hover {
+    color:#777;   
+}
 
-#loginForm {
+/* index.html, signup.html ---------------- */
+
+.loginForm {
     margin-left:auto;
     margin-right:auto;
-    margin:auto;
     width:600px;
-    text-align=center;
-    background-color:#c1c1c1;
+    text-align:center;
     padding:20px;
 }
 
+.loginSignupToggle {
+    margin-bottom:20px;
+    color:#777;
+    text-transform:uppercase;
+    letter-spacing:3px;
+}
+.loginSignupToggle > strong {
+    color:#444;
+}
+.loginSignupToggle > a {
+    color:#777;
+}
+.loginSignupToggle > a:hover {
+    color:#999;
+}
+
 .formInputField {
-    margin:auto;   
-    width:500px;
+    margin-left:auto;
+    margin-right:auto;  
+    width:400px;
+    -moz-border-radius:10px;
+    border-radius:10px;
+    -webkit-border-radius:10px;
+    border:1px solid #799d82;
+    text-transform:lowercase;
 }
 
 .formButton {
-    width:500px;
-    background: #ec6859;
-    padding: 6px 12px;
-    color: white;   
-}
-
-#signUpButton {
-    margin-top:50px;
-    width:500px;
-    background: #ec6859;
-    padding: 6px 12px;
-    color: white;
-}
-#signUpButton:hover {
-    background: #d34f40;
-}
-#signUpButton:active {
-    background: #d34f40;
-}
-
-/* signup.html ---------------- */
-
-#registerForm {
     margin-left:auto;
     margin-right:auto;
-    width:800px;
+    margin-top:35px;
+    width:300px;
+    height:40px;
+    background-color:#6e9a7a;
+    -moz-border-radius:10px;
+    border-radius:10px;
+    -webkit-border-radius:10px;
+    border:5px solid #6e9a7a;
+    padding:5px;
+    text-align:center;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    font-weight:600;
+    font-size:15px;
+    color:#333;
+}
+.formButton:hover {
+    background-color: #799d82; 
+    border:5px solid #799d82;
+}
+.formButton > a {
+    color:#333;
+    text-decoration:none;
 }
 
 /* home.html ---------------- */
+
+.centredContent {
+    width:1000px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.alignLeft {
+    float:left;   
+}
+
+.alignRight {
+    float:right;   
+}
+
+.button1 {
+    background-color:#eb7e34;
+    moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    border:5px solid #eb7e34;
+    padding:10px;
+    text-align:center;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    font-weight:600;
+    font-size:15px;
+    color:#333;
+}
+.button1:hover {
+    background-color: #ea8f51; 
+    border:5px solid #ea8f51;
+    color:#333;
+}
+.button1 > a {
+    color:#333;
+    text-decoration:none;
+}
+
+.button2 {
+    background-color:#94ce8f;
+    moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    border:2px solid #77c471;
+    padding:10px;
+    text-align:center;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    font-weight:600;
+    font-size:15px;
+    color:#333;
+}
+.button2:hover {
+    background-color: #248e38; 
+    border:5px solid #248e38;
+    color:#333;
+}
+.button2 > a {
+    color:#333;
+    text-decoration:none;
+}
+
+
+/* budgets.html ---------------- */
+
+.paddingTopBottom {
+    margin-top:20px;
+    margin-bottom:20px;
+}
 
 /* Sidebar pills background */
 #sidebarPill {
