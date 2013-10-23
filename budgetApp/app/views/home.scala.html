@@ -8,7 +8,7 @@
 		Logged in as @session.get("connected_username")
 	</h1>	
 
-	@form(action = routes.Expenses.addExpense(),  'id -> "expenseForm", 'class -> "form-horizontal", 'onSubmit -> "return checkExpenseTag(this)", 'role -> "form") {
+	@form(action = routes.Expenses.addExpense(), 'id -> "expenseForm", 'class -> "form-horizontal", 'onSubmit -> "return checkExpenseTag(this)", 'role -> "form") {
 		
 		<div class="form-group">
 			<div class="col-lg-4">
@@ -37,7 +37,7 @@
 		      		<span class="input-group-addon add-on">
 		        		<i class="glyphicon glyphicon-calendar"></i>
 		      		</span>
-		      		<input type="text" name="expense_date" class="form-control" size="16" value="2013-08-17" readonly>
+		      		<input type="text" name="expense_date" class="form-control" size="16" value="2013-08-17" onclick="$('#expense_datepicker').datepicker('show')" readonly>
 	      		</div>
 		  	</div>
 	  	</div>
@@ -67,7 +67,7 @@
 		</div>
     }
 	
-	@form(action = routes.Incomes.addIncome(),  'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkIncomeTag(this)", 'role -> "form") {
+	@form(action = routes.Incomes.addIncome(), 'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkIncomeTag(this)", 'role -> "form") {
 		
 		<div class="form-group">
 			<div class="col-lg-4">
@@ -96,7 +96,7 @@
 		      		<span class="input-group-addon add-on">
 		        		<i class="glyphicon glyphicon-calendar"></i>
 		      		</span>
-		      		<input type="text" name="income_date" class="form-control" size="16" value="2013-08-17" readonly>
+		      		<input type="text" name="income_date" class="form-control" size="16" value="2013-08-17" onclick="$('#income_datepicker').datepicker('show')" readonly>
 	      		</div>
 		  	</div>
 	  	</div>
@@ -110,6 +110,76 @@
 	  	<div class="form-group">
 	  		<div class="col-lg-4">
 			  	<select name="income_repeat" class="selectpicker show-tick show-menu-arrow">
+					<option value="0">Don't Repeat</option>
+					<optgroup label="Repeat">
+						<option value="1">Daily</option>
+						<option value="2">Weekly</option>
+						<option value="3">Fortnightly</option>
+						<option value="4">Monthly</option>
+					</optgroup>
+				</select>
+			</div>
+		</div>
+	  	
+		<div class="form-group">
+			<input type="submit" class="btn btn-primary" name="submit" value="Log Income">
+		</div>
+    }
+    
+    @form(action = routes.Budgets.addBudget(), 'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkBudgetTag(this)", 'role -> "form") {
+		
+		<div class="form-group">
+			<div class="col-lg-4">
+		  		<input type="text" name="budget_amount" value="1.00">
+	  		</div>
+		</div>
+
+		<div class="form-group">
+		  	<div class="col-lg-4">
+		      	<input type="text" id="budget_tags" class="form-control" name="tags" placeholder="New Tags">
+		  	</div>
+	  	</div>
+	  	
+	  	<div class="form-group">
+	  		<div class="col-lg-4">
+		  		<button type="button" class="btn btn-default btn-sm" onclick="addBudgetTag('food')">food</button>
+ 				<button type="button" class="btn btn-default btn-sm" onclick="addBudgetTag('transport')">transport</button>
+ 				<button type="button" class="btn btn-default btn-sm" onclick="addBudgetTag('present')">present</button>
+ 				<button type="button" class="btn btn-default btn-sm" onclick="addBudgetTag('stationary')">stationary</button>				
+			</div>
+		</div>		
+
+		<div class="form-group">
+		  	<div class="col-lg-4">
+		  		<div class="input-group date" id="budget_start_datepicker" data-date="2013-8-16" data-date-format="yyyy-mm-dd">
+		      		<span class="input-group-addon add-on">
+		        		<i class="glyphicon glyphicon-calendar"></i>
+		      		</span>
+		      		<input type="text" name="budget_start_date" class="form-control" size="16" value="2013-8-16" onclick="$('#budget_start_datepicker').datepicker('show')" readonly>
+	      		</div>
+		  	</div>
+	  	</div>
+	  	
+	  	<div class="form-group">
+		  	<div class="col-lg-4">
+		  		<div class="input-group date" id="budget_end_datepicker" data-date="2013-8-16" data-date-format="yyyy-mm-dd">
+		      		<span class="input-group-addon add-on">
+		        		<i class="glyphicon glyphicon-calendar"></i>
+		      		</span>
+		      		<input type="text" name="budget_end_date" class="form-control" size="16" value="2013-8-16" onclick="$('#budget_end_datepicker').datepicker('show')" readonly>
+	      		</div>
+		  	</div>
+	  	</div>
+
+	  	<div class="form-group">
+		  	<div class="col-lg-4">
+		  		<textarea rows="2" name="budget_description" class="form-control" maxlength="256" placeholder="Description"></textarea>
+		  	</div>
+	  	</div>
+	  	
+	  	<div class="form-group">
+	  		<div class="col-lg-4">
+			  	<select name="budget_repeat" class="selectpicker show-tick show-menu-arrow">
 					<option value="0">Don't Repeat</option>
 					<optgroup label="Repeat">
 						<option value="1">Daily</option>
@@ -149,14 +219,58 @@
 		        prefix: '$'
 			});
 
-			$('#income_datepicker').datepicker();
-			$('#expense_datepicker').datepicker();
+			$("input[name='budget_amount']").TouchSpin({
+				min: 0.01,
+				max: 99999999999999.99,
+		        step: 0.1,
+		        decimals: 2,
+		        boostat: 5,
+		        maxboostedstep: 10,
+		        prefix: '$'
+			});
+			
+			var nowTemp = new Date();
+			var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+			var tomorrow = new Date(now);
+			tomorrow.setDate(tomorrow.getDate() + 1);
+			
+			$('#income_datepicker').datepicker('setValue', now);
+			$('#expense_datepicker').datepicker('setValue', now);
+			 
+			var budget_start = $('#budget_start_datepicker').datepicker('setValue', now
+			).on('changeDate', function(ev) {
+				if (ev.date.valueOf() >= budget_end.date.valueOf()) {
+					var newDate = new Date(ev.date);
+					newDate.setDate(newDate.getDate() + 1);
+					budget_end.setValue(newDate);
+				}
+				budget_start.hide();
+				$("input[name='budget_end_date']").click();
+			}).data('datepicker');
+
+			var budget_end = $('#budget_end_datepicker').datepicker({
+				onRender: function(date) {
+				  	return date.valueOf() <= budget_start.date.valueOf() ? 'disabled' : '';
+				}
+			}).on('onRender', function(date) {
+				return date.valueOf() <= budget_start.date.valueOf() ? 'disabled' : '';
+			}).on('changeDate', function(ev) {
+				budget_end.hide();
+			}).on('show', function(ev) {
+				budget_end.update();
+			}).data('datepicker');
+
+			budget_end.setValue(tomorrow);
+			
 
 			$("#income_tags").tagsManager({
 				hiddenTagListName: 'income_tag_list'
 			});
 			$("#expense_tags").tagsManager({
 				hiddenTagListName: 'expense_tag_list'
+			});
+			$("#budget_tags").tagsManager({
+				hiddenTagListName: 'budget_tag_list'
 			});
 
 			$('.selectpicker').selectpicker();
@@ -168,6 +282,9 @@
 		}
 		function addExpenseTag(tag) {
 			$("#expense_tags").tagsManager('pushTag', tag);
+		}
+		function addBudgetTag(tag) {
+			$("#budget_tags").tagsManager('pushTag', tag);
 		}
 
 		function checkIncomeTag(f) {
@@ -181,6 +298,15 @@
 		}
 		function checkExpenseTag(f) {
 			if ($("#expense_tags").tagsManager('tags').tags.length == 0) {
+				alert("Please select at least one tag");
+				return false;
+			} else {
+				f.submit();
+				return false;
+			}
+		}
+		function checkBudgetTag(f) {
+			if ($("#budget_tags").tagsManager('tags').tags.length == 0) {
 				alert("Please select at least one tag");
 				return false;
 			} else {

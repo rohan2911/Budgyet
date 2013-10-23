@@ -16,6 +16,8 @@ POST	/addincome					controllers.Incomes.addIncome()
 
 POST	/addexpense					controllers.Expenses.addExpense()
 
+POST	/addbudget					controllers.Budgets.addBudget()
+
 #POST	/tasks/:id/delete			controllers.Application.deleteTask(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
