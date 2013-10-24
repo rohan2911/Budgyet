@@ -30,6 +30,7 @@ public class Expense {
 		this.amount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
 		this.tags = new ArrayList<String>(Arrays.asList(tags.split(",")));
 		try {
+			// simpledateformat is a JAVA date. 
 			this.date_occur = new SimpleDateFormat("yyyy-MM-dd").parse(date_occur);
 		} catch (ParseException e) {
 			this.date_occur = null;
@@ -59,10 +60,11 @@ public class Expense {
 			
 			generatedKeys = ps1.getGeneratedKeys();
 			if (generatedKeys.next()) {
-				long income_id = generatedKeys.getLong(1);
+				long expense_id = generatedKeys.getLong(1);
 				
 				// insert the tags
-				ps2 = connection.prepareStatement("insert into expenses_tags (owner, name) select * from (select ?, ?) as tmp where not exists (select 1 from expenses_tags where owner = ? and name = ?)");
+				ps2 = connection.prepareStatement("insert into expenses_tags (owner, name) select * from (select ?, ?) as tmp where "
+						+ "not exists (select 1 from expenses_tags where owner = ? and name = ?)");
 				ps2.setLong(1, expense.owner);
 				ps2.setLong(3, expense.owner);
 				Iterator<String> tags_it = expense.tags.iterator();
@@ -88,7 +90,7 @@ public class Expense {
 				
 				// insert the expense tag mapping
 				ps4 = connection.prepareStatement("insert into expenses_tags_map (expense, tag) values (?, ?)");
-				ps4.setLong(1, income_id);
+				ps4.setLong(1, expense_id);
 				while (rs.next()) {
 					ps4.setLong(2, rs.getLong("id"));
 					ps4.executeUpdate();

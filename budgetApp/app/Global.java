@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 
 import controllers.ScheduleActor;
 

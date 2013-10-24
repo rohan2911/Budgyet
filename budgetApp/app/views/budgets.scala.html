@@ -1,0 +1,207 @@
+@(budgets: List[BudgetBar])
+
+@import helper._
+ 
+@main("Budgets | Budgyet") {    
+  	<!-- Navbar -->
+	<nav class="navbar navbar-default navbarOverride" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="@routes.Application.index()"><img src="@routes.Assets.at("images/logo.png")" height="16"></a>
+		</div>
+		
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse navbar-ex1-collapse">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="@routes.Budgets.budgets()">Budgets</a></li>
+				<li><a href="@routes.Incomes.incomes()">Income</a></li>
+				<li><a href="@routes.Expenses.expenses()">Expenses</a></li>
+			</ul>
+			  
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#">@session.get("connected_username")</a></li>
+				<li><a href="@routes.Accounts.logout()">Logout</a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</nav>
+        
+        <!-- Centred content -->
+        <div class="centredContent">
+            <div class="page-header">
+                <p class="alignLeft"><h1>Budgets Overview</h1></p>
+                <p class="alignRight">
+                    <a data-toggle="modal" href="#createBudgetModal" class="btn btn-primary btn-lg button1"><span class="glyphicon glyphicon-plus"></span> New</a>
+                </p>
+            </div>
+            
+            <div class="row paddingtopBottom">
+                <!-- Search bar for budget -->
+                <form class="form-inline alignLeft" role="search">
+                  <div class="form-group">
+                    <input type="text" class="form-control roundedBorder" placeholder="Search by keyword">
+                  </div>
+                  <button type="submit" class="btn btn-default roundedBorder"><span class="glyphicon glyphicon-search"></span></button>
+                </form>
+                
+                <!-- Page navigation -->
+                <ul class="pagination alignRight roundedBorder">
+                  <li><a href="#">&laquo;</a></li>
+                  <li><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">4</a></li>
+                  <li><a href="#">5</a></li>
+                  <li><a href="#">&raquo;</a></li>
+                </ul>
+            </div>
+            
+            <form class="form-inline" role="form">
+                <div class="form-group">
+                    <!-- Active/expired radio buttons -->
+                    <div class="radio" class="radio-inline">
+                      <label>
+                        <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+                        All Budgets
+                      </label>
+                    </div>
+                    <div class="radio" class="radio-inline">
+                      <label>
+                        <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                        Active Budgets
+                      </label>
+                    </div>
+                    <div class="radio" class="radio-inline">
+                      <label>
+                        <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">
+                        Expired Budgets
+                      </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <!-- Time period dropdown -->
+                    <!--div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                          Period
+                          <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a href="#">Current week</a></li>
+                          <li><a href="#">Current month</a></li>
+                          <li><a href="#">Last 31 days</a></li>
+                          <li><a href="#">Last 60 days</a></li>
+                          <li><a href="#">Last 90 days</a></li>
+                          <li><a href="#">All</a></li>
+                        </ul>
+                    </div-->
+                    
+                    <select class="form-control roundedBorder">
+                      <option value="" selected disabled>Period</option>
+                      <option>Current week</option>
+                      <option>Current month</option>
+                      <option>Last 31 days</option>
+                      <option>Last 60 days</option>
+                      <option>Last 90 Days</option>
+                      <option>All</option>
+                    </select>
+                </div>
+            </form>
+        
+            <hr>
+        
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Budgets</h3>
+                </div>
+                <table class="table">
+                    <tr><td>
+                        <h4><strong>Overall</strong></h4>
+                        <div class="progress">
+                          <div class="progress-bar progress-bar-success" style="width: 35%">
+                            <span class="sr-only">35% Complete (success)</span>
+                          </div>
+                          <div class="progress-bar progress-bar-warning" style="width: 20%">
+                            <span class="sr-only">20% Complete (warning)</span>
+                          </div>
+                          <div class="progress-bar progress-bar-danger" style="width: 10%">
+                            <span class="sr-only">10% Complete (danger)</span>
+                          </div>
+                        </div>
+                    </td></tr>
+                    
+                    	
+					@for(budget <- budgets) {
+						<tr><td>
+							<strong>@budget.getTitle()</strong></br>
+							@budget.getDateStart() to @budget.getDateEnd() </br>
+							<div class="numberFormat">@budget.getProgress()</div>/<div class="numberFormat">@budget.getAmount()</div>
+							<div class="progress">
+								<div class="progress-bar progress-bar-info" role="progressbar" aria-valuetransitiongoal="@budget.getProgress()" aria-valuemin="0" aria-valuemax="@budget.getAmount()"></div>
+							</div>
+						</td></tr>
+					}
+                    
+                    <tr><td>
+                        <strong>Budget 1</strong><br>
+                        Time to Time<br>
+                        $xx.xx/xx.xx<br>
+                        <div class="progress">
+                          <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+                            <span class="sr-only">20% Complete</span>
+                          </div>
+                        </div>
+                    </td></tr>
+                    <tr><td>
+                        <strong>Budget 2</strong><br>
+                        Time to Time<br>
+                        $xx.xx/xx.xx<br>
+                        <div class="progress">
+                          <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                            <span class="sr-only">60% Complete (warning)</span>
+                          </div>
+                        </div>
+                    </td></tr>
+                    <tr><td>
+                        <strong>Budget 3</strong><br>
+                        Time to Time<br>
+                        $xx.xx/xx.xx<br>
+                        <div class="progress">
+                          <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                            <span class="sr-only">80% Complete</span>
+                          </div>
+                        </div>
+                    </td></tr>
+                </table>
+            </div>  
+            
+            
+    <script>
+		$(document).ready(function() {
+			$('.progress .progress-bar').progressbar();
+		});
+
+		$('.numberFormat').each(function() {
+			$(this).replaceWith(formatNumber($(this).text(), '$'));
+		})
+
+		function formatNumber(num, prefix){
+			prefix = prefix || '';
+			num += '';
+			var splitStr = num.split('.');
+			var splitLeft = splitStr[0];
+			var splitRight = splitStr.length > 1 ? '.' + splitStr[1] : '';
+			var regx = /(\d+)(\d{3})/;
+			while (regx.test(splitLeft)) {
+				splitLeft = splitLeft.replace(regx, '$1' + ',' + '$2');
+			}
+			return prefix + splitLeft + splitRight;
+		}
+	</script>
+}
+

@@ -12,9 +12,14 @@ GET		/logout						controllers.Accounts.logout()
 GET		/register					controllers.Accounts.register()
 POST	/register					controllers.Accounts.addAccount()
 
+GET		/incomes					controllers.Incomes.incomes()
 POST	/addincome					controllers.Incomes.addIncome()
 
+GET 	/expenses					controllers.Expenses.expenses()
 POST	/addexpense					controllers.Expenses.addExpense()
+
+GET 	/budgets					controllers.Budgets.budgets()
+POST	/addbudget					controllers.Budgets.addBudget()
 
 #POST	/tasks/:id/delete			controllers.Application.deleteTask(id: Long)
 
