@@ -46,7 +46,7 @@ a:hover {
     margin-right:auto;  
     width:400px;
     -moz-border-radius:10px;
-    border-radius:10px;
+    border-radius:10px; /* mozilla fix */
     -webkit-border-radius:10px;
     border:1px solid #799d82;
     text-transform:lowercase;
@@ -60,7 +60,7 @@ a:hover {
     height:40px;
     background-color:#6e9a7a;
     -moz-border-radius:10px;
-    border-radius:10px;
+    border-radius:10px; /* mozilla fix */
     -webkit-border-radius:10px;
     border:5px solid #6e9a7a;
     padding:5px;
@@ -80,6 +80,13 @@ a:hover {
     text-decoration:none;
 }
 
+/* navbar ---------------- */
+
+.navbarOverride {
+    background-color:#bbe0b8;
+    border-color:#bbe0b8;
+}
+
 /* home.html ---------------- */
 
 .centredContent {
@@ -97,21 +104,22 @@ a:hover {
 }
 
 .button1 {
-    background-color:#eb7e34;
-    moz-border-radius:10px;
+    background-color:#96bfa1;
+    -moz-border-radius:10px;
+    border-radius:10px; /* mozilla fix */
     -webkit-border-radius:10px;
-    border:5px solid #eb7e34;
+    border:5px solid #96bfa1;
     padding:10px;
     text-align:center;
     text-transform:uppercase;
-    letter-spacing:1px;
+    letter-spacing:2px;
     font-weight:600;
     font-size:15px;
     color:#333;
 }
 .button1:hover {
-    background-color: #ea8f51; 
-    border:5px solid #ea8f51;
+    background-color: #a5c7ae; 
+    border:5px solid #a5c7ae;
     color:#333;
 }
 .button1 > a {
@@ -120,11 +128,12 @@ a:hover {
 }
 
 .button2 {
-    background-color:#94ce8f;
-    moz-border-radius:10px;
+    background-color:#b6dbc0;
+    -moz-border-radius:10px;
+    border-radius:10px; /* mozilla fix */
     -webkit-border-radius:10px;
-    border:2px solid #77c471;
-    padding:10px;
+    border:5px solid #b6dbc0;
+    padding:8px;
     text-align:center;
     text-transform:uppercase;
     letter-spacing:1px;
@@ -133,15 +142,14 @@ a:hover {
     color:#333;
 }
 .button2:hover {
-    background-color: #248e38; 
-    border:5px solid #248e38;
+    background-color: #c2ddc9; 
+    border:5px solid #c2ddc9;
     color:#333;
 }
 .button2 > a {
     color:#333;
     text-decoration:none;
 }
-
 
 /* budgets.html ---------------- */
 
@@ -150,39 +158,11 @@ a:hover {
     margin-bottom:20px;
 }
 
-/* Sidebar pills background */
-#sidebarPill {
-    border-radius:6px;
-    background-color:#29c87c;
-}
-/* Non-active pill links */
-#sidebarPill > li > a,
-#sidebarPill > li > a:focus {
-    border-color:#c1c1c1;
-    background-color: #c1c1c1;
-    color: #333;
-}
-#sidebarPill > li > a:hover {
-    background-color: #dedede;
-    color: #000000;
-}
-/* Active pill links */
-#sidebarPill > li.active > a,
-#sidebarPill > li.active > a:hover,
-#sidebarPill > li.active > a:focus {
-    border-color:#ec6859;
-    background-color: #ec6859;
-    color: #000000;
+.roundedBorder {
+    -moz-border-radius:10px;
+    border-radius:10px; /* mozilla fix */
+    -webkit-border-radius:10px;
+    border:1px solid #799d82;
+    /*text-transform:lowercase;*/
 }
 
-.actionPill,
-.actionPill > li > a,
-.actionPill > li > a:focus {
-    border-color:#eb7b6f;
-    background-color:#eb7b6f;
-    color: #333;
-}
-.actionPill> li > a:hover {
-    background-color: #dedede;
-    color: #000000;
-}

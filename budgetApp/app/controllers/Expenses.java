@@ -6,6 +6,7 @@ import play.data.DynamicForm;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
+import views.html.*;
 
 public class Expenses extends Controller {
 	
@@ -23,6 +24,10 @@ public class Expenses extends Controller {
 		Expense.add(expense);
     	
 		return redirect(routes.Application.index());
+	}
+	
+	public static Result expenses() {
+    	return ok(expenses.render());
 	}
 	
 }

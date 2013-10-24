@@ -5,7 +5,7 @@
 @main("Budgyet") {
 	
 	<!-- Navbar -->
-	<nav class="navbar navbar-default" role="navigation">
+	<nav class="navbar navbar-default navbarOverride" role="navigation">
 		<!-- Brand and toggle get grouped for better mobile display -->
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -20,9 +20,9 @@
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 			<ul class="nav navbar-nav">
-				<li><a href="budgets.html">Budgets</a></li>
-				<li><a href="income.html">Income</a></li>
-				<li><a href="expenses.html">Expenses</a></li>
+				<li><a href="@routes.Budgets.budgets()">Budgets</a></li>
+				<li><a href="@routes.Incomes.incomes()">Income</a></li>
+				<li><a href="@routes.Expenses.expenses()">Expenses</a></li>
 			</ul>
 			  
 			<ul class="nav navbar-nav navbar-right">
@@ -33,7 +33,9 @@
 	</nav>
 	
 	@for(budget <- budgets) {
-		<h3>@budget.getTitle()</h3>
+		<h4><strong>@budget.getTitle()</strong></h4>
+		@budget.getDateStart() to @budget.getDateEnd() </br>
+		<div class="numberFormat">@budget.getProgress()</div>/<div class="numberFormat">@budget.getAmount()</div>
 		<div class="progress">
 			<div class="progress-bar progress-bar-info" role="progressbar" aria-valuetransitiongoal="@budget.getProgress()" aria-valuemin="0" aria-valuemax="@budget.getAmount()"></div>
 		</div>
@@ -236,10 +238,7 @@
     <script>
 		$(document).ready(function() {
 
-			$('.progress .progress-bar').progressbar({
-			    display_text: 'center',
-			    use_percentage: false
-			});
+			$('.progress .progress-bar').progressbar();
 			
 			$("input[name='income_amount']").TouchSpin({
 				min: 0.01,
@@ -316,6 +315,11 @@
 			});
 
 			$('.selectpicker').selectpicker();
+
+			$('.numberFormat').each(function() {
+				$(this).replaceWith(formatNumber($(this).text(), '$'));
+			})
+			
 		});
 
 
@@ -360,6 +364,20 @@
 				return false;
 			}
 		}
+
+		function formatNumber(num, prefix){
+			prefix = prefix || '';
+			num += '';
+			var splitStr = num.split('.');
+			var splitLeft = splitStr[0];
+			var splitRight = splitStr.length > 1 ? '.' + splitStr[1] : '';
+			var regx = /(\d+)(\d{3})/;
+			while (regx.test(splitLeft)) {
+				splitLeft = splitLeft.replace(regx, '$1' + ',' + '$2');
+			}
+			return prefix + splitLeft + splitRight;
+		}
+			 
 		
 	</script>
 }

@@ -4,6 +4,7 @@ import models.Budget;
 import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
+import views.html.*;
 
 /**
  * Controls budgets
@@ -28,6 +29,10 @@ public class Budgets extends Controller {
     	Budget.add(budget);
     	
 		return redirect(routes.Application.index());
+	}
+	
+	public static Result budgets() {
+		return ok(budgets.render(Budget.getProgressBudgets(session("connected_id"))));
 	}
 	
 }

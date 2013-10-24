@@ -129,4 +129,43 @@ public class Income {
 		
 		return true;
 	}
+
+	/**
+	 * Get all the incomes belonging to specified user
+	 * @param accId id number of the account from db
+	 * @return
+	 */
+	public static List<Income> getIncomes(String accId) {
+		List<Income> incomes = new ArrayList<Income>();
+		// select all incomes by user
+		/* select i.amount, i.desc, i.date_occur, it.name from income i 
+		 *	 join incomes_tags_map im on i.id = im.income
+		 *	 join incomes_tags it on im.tag = it.id  
+		 *where i.owner = userId
+		 * 
+		 */ 
+		
+		Connection connection = DB.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			ps = connection.prepareStatement(" select i.amount, i.description, i.date_occur, it.name from incomes i"
+					+ "	join incomes_tags_map im on i.id = im.income"
+					+ "	join incomes_tags it on im.tag = it.id"
+					+ "	where i.owner = ?;");
+			ps.setLong(1, Long.parseLong(accId));
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				Income i = new Income(accId, accId, accId, accId, accId);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		
+		return incomes;
+	}
 }

@@ -1,10 +1,12 @@
 package controllers;
 
 
+import models.Budget;
 import models.Income;
 import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
+import views.html.*;
 
 public class Incomes extends Controller {
 
@@ -23,5 +25,10 @@ public class Incomes extends Controller {
 	
 		return redirect(routes.Application.index());
 	}
+	
+	public static Result incomes() {
+    	return ok(income.render(Income.getIncomes(session("connected_id"))));
+	}
+
 }
 

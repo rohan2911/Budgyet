@@ -1,0 +1,97 @@
+@()
+
+@import helper._
+ 
+@main("Expenses | Budgyet") {
+
+   	<!-- Navbar -->
+	<nav class="navbar navbar-default navbarOverride" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="@routes.Application.index()"><img src="@routes.Assets.at("images/logo.png")" height="16"></a>
+		</div>
+		
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse navbar-ex1-collapse">
+			<ul class="nav navbar-nav">
+				<li><a href="@routes.Budgets.budgets()">Budgets</a></li>
+				<li><a href="@routes.Incomes.incomes()">Income</a></li>
+				<li class="active"><a href="@routes.Expenses.expenses()">Expenses</a></li>
+			</ul>
+			  
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#">@session.get("connected_username")</a></li>
+				<li><a href="@routes.Accounts.logout()">Logout</a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</nav>
+        
+        <!-- Centred content -->
+        <div class="centredContent">
+            <div class="page-header">
+                <p class="alignLeft"><h1>Expenses Overview</h1></p>
+                <p class="alignRight">
+                    <a data-toggle="modal" href="#createBudgetModal" class="btn btn-primary btn-lg button1"><span class="glyphicon glyphicon-plus"></span></a>
+                </p>
+            </div>
+        
+            <!-- Graph -->
+            <div id="expensesGraph" style="min-width: 310px; height: 400px; margin-top:50px auto">
+                <script>
+                    $(function () {
+                        $('#expensesGraph').highcharts({
+                            chart: {
+                                plotBackgroundColor: '#e9f8e8',
+                                plotBorderWidth: null,
+                                plotShadow: false
+                            },
+                            title: {
+                                text: 'Expenses for this budget'
+                            },
+                            tooltip: {
+                                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                            },
+                            plotOptions: {
+                                pie: {
+                                    allowPointSelect: true,
+                                    cursor: 'pointer',
+                                    dataLabels: {
+                                        enabled: true,
+                                        color: '#000000',
+                                        connectorColor: '#000000',
+                                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                                    }
+                                }
+                            },
+                            series: [{
+                                type: 'pie',
+                                name: 'Expenses share',
+                                data: [
+                                    ['House',   45.0],
+                                    ['Food',       26.8],
+                                    {
+                                        name: 'Steam',
+                                        y: 12.8,
+                                        sliced: true,
+                                        selected: true
+                                    },
+                                    ['Clothes',    8.5],
+                                    ['Games',     6.2],
+                                    ['Others',   0.7]
+                                ]
+                            }]
+                        });
+                    });
+
+                    
+                </script>
+            </div>
+        </div>
+    
+}
