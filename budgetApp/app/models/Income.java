@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -22,22 +23,21 @@ public class Income {
 	public long owner;
 	public BigDecimal amount;
 	public List<String> tags;
-	public Date income_date;
+	public Date date_occur;
 	public String description;
 	
-	public Income(String owner, String amount, String tags, String date, String description) {
+	public Income(String owner, String amount, String tags, String date_occur, String description) {
 		this.owner = Long.parseLong(owner);
 		this.amount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
 		this.tags = new ArrayList<String>(Arrays.asList(tags.split(",")));
 		try {
-			this.income_date = new SimpleDateFormat("yyyy-MM-dd").parse(date);
+			this.date_occur = new SimpleDateFormat("yyyy-MM-dd").parse(date_occur);
 		} catch (ParseException e) {
-			this.income_date = null;
+			this.date_occur = null;
 			e.printStackTrace();
 		}
 		this.description = description;
 	}
-	
 	
 	public static boolean add(Income income) {
 		
@@ -51,11 +51,11 @@ public class Income {
 		
 		try {
 			// insert the income
-			ps1 = connection.prepareStatement("insert into incomes (owner, amount, description, income_date) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			ps1 = connection.prepareStatement("insert into incomes (owner, amount, description, date_occur) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			ps1.setLong(1, income.owner);
 			ps1.setBigDecimal(2, income.amount);
 			ps1.setString(3, income.description);
-			ps1.setDate(4, new java.sql.Date(income.income_date.getTime()));
+			ps1.setDate(4, new java.sql.Date(income.date_occur.getTime()));
 			ps1.executeUpdate();
 			
 			generatedKeys = ps1.getGeneratedKeys();
@@ -63,7 +63,7 @@ public class Income {
 				long income_id = generatedKeys.getLong(1);
 				
 				// insert the tags
-				ps2 = connection.prepareStatement("insert into income_tags (owner, name) select * from (select ?, ?) as tmp where not exists (select 1 from income_tags where owner = ? and name = ?)");
+				ps2 = connection.prepareStatement("insert into incomes_tags (owner, name) select * from (select ?, ?) as tmp where not exists (select 1 from incomes_tags where owner = ? and name = ?)");
 				ps2.setLong(1, income.owner);
 				ps2.setLong(3, income.owner);
 				Iterator<String> tags_it = income.tags.iterator();
@@ -75,7 +75,7 @@ public class Income {
 				}
 				
 				// get tag ids
-				String sql3 = "select id from income_tags where owner = ? and (name = ?";
+				String sql3 = "select id from incomes_tags where owner = ? and (name = ?";
 				for (int i=0; i<income.tags.size()-1; i++) {
 					sql3 += " OR name = ?";
 				}
@@ -88,7 +88,7 @@ public class Income {
 				rs = ps3.executeQuery();
 				
 				// insert the income tag mapping
-				ps4 = connection.prepareStatement("insert into income_tags_map (income, tag) values (?, ?)");
+				ps4 = connection.prepareStatement("insert into incomes_tags_map (income, tag) values (?, ?)");
 				ps4.setLong(1, income_id);
 				while (rs.next()) {
 					ps4.setLong(2, rs.getLong("id"));
@@ -130,4 +130,6 @@ public class Income {
 		
 		return true;
 	}
+	
+	
 }

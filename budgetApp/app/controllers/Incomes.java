@@ -1,10 +1,8 @@
 package controllers;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import models.Income;
+import models.ScheduledIncome;
 import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -17,18 +15,20 @@ public class Incomes extends Controller {
     	String amount = form.get("income_amount");
     	String tags = form.get("income_tag_list");
     	String date = form.get("income_date");
-    	String description = form.get("description");
+    	String description = form.get("income_description");
 		
-		/*System.out.println("tags = " + tags);
-		System.out.println("tagslength = " + tags.length());
-		System.out.println("date = " + date);*/
-		
+    	String repeat = form.get("income_repeat");
+    	
+    	
 		Income income = new Income(session().get("connected_id"), amount, tags, date, description);
 		Income.add(income);
+		
+		if (!repeat.equals("0")) {
+			ScheduledIncome scheduledIncome = new ScheduledIncome(date, repeat);
+			ScheduledIncome.add(scheduledIncome);
+		}
 	
 		return redirect(routes.Application.index());
 	}
-	
-	
 }
 
