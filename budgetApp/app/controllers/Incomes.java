@@ -21,15 +21,22 @@ public class Incomes extends Controller {
 		
     	String repeat = form.get("income_repeat");
     	
-    	
-		Income income = new Income(session().get("connected_id"), amount, tags, date, description);
-		Income.add(income);
-		
-		if (!repeat.equals("0")) {
+		if (repeat != null && !repeat.equals("0")) {
+			// create with scheduled repeat
+	    	long id = 0;
 			ScheduledIncome scheduledIncome = new ScheduledIncome(date, repeat);
-			ScheduledIncome.add(scheduledIncome);
+			id = ScheduledIncome.add(scheduledIncome);
+			
+			//TODO add method that runs scheduled task on only this new record
+			Income income = new Income(session().get("connected_id"), amount, tags, date, description, id);
+			Income.add(income);
+		} else {
+			// create only income
+			Income income = new Income(session().get("connected_id"), amount, tags, date, description, (Long) null);
+			Income.add(income);
 		}
-	
+		
+		
 		return redirect(routes.Application.index());
 	}
 	

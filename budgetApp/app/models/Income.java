@@ -25,8 +25,9 @@ public class Income {
 	public List<String> tags;
 	public Date date_occur;
 	public String description;
+	public long scheduler;
 	
-	public Income(String owner, String amount, String tags, String date_occur, String description) {
+	public Income(String owner, String amount, String tags, String date_occur, String description, long scheduler) {
 		this.owner = Long.parseLong(owner);
 		this.amount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
 		this.tags = new ArrayList<String>(Arrays.asList(tags.split(",")));
@@ -37,6 +38,7 @@ public class Income {
 			e.printStackTrace();
 		}
 		this.description = description;
+		this.scheduler = scheduler;
 	}
 	
 	public static boolean add(Income income) {
@@ -51,11 +53,12 @@ public class Income {
 		
 		try {
 			// insert the income
-			ps1 = connection.prepareStatement("insert into incomes (owner, amount, description, date_occur) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			ps1 = connection.prepareStatement("insert into incomes (owner, amount, description, date_occur, scheduler) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			ps1.setLong(1, income.owner);
 			ps1.setBigDecimal(2, income.amount);
 			ps1.setString(3, income.description);
 			ps1.setDate(4, new java.sql.Date(income.date_occur.getTime()));
+			ps1.setLong(5, income.scheduler);
 			ps1.executeUpdate();
 			
 			generatedKeys = ps1.getGeneratedKeys();
@@ -159,7 +162,7 @@ public class Income {
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				Income i = new Income(accId, accId, accId, accId, accId);
+				Income i = new Income(accId, accId, accId, accId, accId, new Long(1));
 			}
 			
 		} catch (SQLException e) {

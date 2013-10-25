@@ -1,7 +1,5 @@
 package models;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,26 +26,62 @@ public class ScheduledIncome {
 	/**
 	 * Constructor
 	 * 
-	 * @param date_last - the date the income was most recently created on 
-	 * @param period - the number of days between payment reccurrences  
+	 * @param date_next - the date the income was most recently created on 
+	 * @param period - the number of days between payment recurrence  
 	 */
 	
-	public ScheduledIncome (String date_last, String period) {
+	public ScheduledIncome (String date_next, String period) {
 		try {
-			this.date_next = new SimpleDateFormat("yyyy-MM-dd").parse(date_last);
+			this.date_next = new SimpleDateFormat("yyyy-MM-dd").parse(date_next);
 		} catch (ParseException e) {
 			this.date_next = null;
 			e.printStackTrace();
 		}
 		
-		this.period = Long.getLong(period);
+		this.period = Long.parseLong(period);
 	}
 	
+	/**
+	 * adds scheduled income to the db
+	 * 
+	 * @param scheduledIncome
+	 * @return scheduledIncome Id
+	 */
 	
-	
-	public static boolean add(ScheduledIncome scheduledIncome) {
+	public static long add(ScheduledIncome scheduledIncome) {
+		Connection connection = DB.getConnection();
+		PreparedStatement ps1 = null;
+		ResultSet rs = null;
+		int generatedKeys = 0;
 		
-		return false;
+		
+		try {
+			// insert values into DB
+			ps1 = connection.prepareStatement("INSERT INTO scheduled_incomes (date_next, period) VALUES (?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
+			ps1.setDate(1, new java.sql.Date(scheduledIncome.date_next.getTime()));
+			ps1.setLong(2, scheduledIncome.period);
+			
+			// get the id to return
+			generatedKeys = ps1.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (ps1 != null) {
+					ps1.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return generatedKeys;
 	}
 	
 	/**
@@ -68,18 +102,16 @@ public class ScheduledIncome {
 		PreparedStatement ps2 = null;
 		PreparedStatement ps3 = null;
 		PreparedStatement ps4 = null;
-		PreparedStatement ps5 = null;
 		ResultSet rs = null;
 		ResultSet rs2 = null;
 		ResultSet rs3 = null;
 		try {
 			
 			// we select the income schedulers who's next scheduled payment time has elapsed
-			ps1 = connection.prepareStatement("SELECT * FROM expenses_scheduled WHERE date_next < ?");
+			ps1 = connection.prepareStatement("SELECT * FROM scheduled_incomes WHERE date_next < ?");
 			ps1.setDate(1, new java.sql.Date(currentDate.getTime()));
 			rs = ps1.executeQuery();
-			
-			while (!rs.isAfterLast()) {
+			while (rs.next()) {
 				long id = rs.getLong("id");
 				
 				long dbPeriod = rs.getLong("period");
@@ -89,77 +121,85 @@ public class ScheduledIncome {
 				nextDate.setTime(dbDate);
 				
 				// fetch the details of an income associated with the scheduler  
-				ps2 = connection.prepareStatement("SELECT * FROM expenses WHERE scheduler = ?");
+				ps2 = connection.prepareStatement("SELECT * FROM incomes WHERE scheduler = ?");
 				ps2.setLong(1, id);
 				rs2 = ps2.executeQuery();
 				
-				// populate strings with result so we can initialise a new income
-				String incomeOwner = String.valueOf(rs2.getLong("owner"));
-				String incomeAmount = rs2.getBigDecimal("amount").toString();
-				String incomeDescription = rs2.getString("description");
-				
-				// get links from tag - income link table
-				long incomeId = rs2.getLong("id");
-				String tags = new String();
-				
-				ps3 = connection.prepareStatement("SELECT * FROM incomes_tags_map WHERE income = ?");
-				ps3.setLong(1, incomeId);
-				rs3 = ps3.executeQuery();
-				
-				// get all linked tags
-				ps4 = connection.prepareStatement("SELECT * FROM income_tags WHERE id IN (?)");
-				
-				while (!rs3.isAfterLast()) { 
-					ps4.setLong(1, rs3.getLong("tag"));
-					rs3.next();
-				}
-				
-				rs3 = ps4.executeQuery();
-				
-				String incomeTags = new String();
-				
-				// aggregate tag names in a string for the Income constructor
-				while (!rs3.isAfterLast()) {
-					incomeTags = incomeTags.concat(rs3.getString("name"));
-					incomeTags = incomeTags.concat(",");
-					rs3.next();
-				}
-				
-				// trim excess comma
-				incomeTags = incomeTags.substring(0, (incomeTags.length() - 1));
-				
-				// translate period flag into a month or number of days
-				int days = 0;
-				int months = 0;
-				switch ((int) dbPeriod) {
-					case 1:
+				if (rs2.next()) { 
+					// populate strings with result so we can initialise a new income
+					String incomeOwner = String.valueOf(rs2.getLong("owner"));
+					String incomeAmount = rs2.getBigDecimal("amount").toString();
+					String incomeDescription = rs2.getString("description");
+					
+					// get links from tag - income link table
+					long incomeId = rs2.getLong("id");
+					
+					ps3 = connection.prepareStatement("SELECT * FROM incomes_tags_map WHERE income = ?");
+					ps3.setLong(1, incomeId);
+					rs3 = ps3.executeQuery();
+					
+					// get all linked tags
+					ps4 = connection.prepareStatement("SELECT * FROM incomes_tags WHERE id IN (?)");
+					
+					while (rs3.next()) { 
+						ps4.setLong(1, rs3.getLong("tag"));
+					}
+					
+					rs3 = ps4.executeQuery();
+					
+					String incomeTags = new String();
+					
+					// aggregate tag names in a string for the Income constructor
+					while (rs3.next()) {
+						incomeTags = incomeTags.concat(rs3.getString("name"));
+						incomeTags = incomeTags.concat(",");
+					}
+					
+					// trim excess comma
+					incomeTags = incomeTags.substring(0, (incomeTags.length() - 1));
+					
+					// translate period flag into a month or number of days
+					int days = 0;
+					int months = 0;
+					if (dbPeriod == 1) {
 						days = 1;
-					case 2:
+						months = 0;
+					} else if (dbPeriod == 2) {
 						days = 7;
-					case 3:
+						months = 0;
+					} else if (dbPeriod == 3) {
 						days = 14;
-					case 4:
+						months = 0;
+					} else if (dbPeriod == 4) {
+						days = 0;
 						months = 1;
-					default:
+					} else {
+						days = 0;
+						months = 0;
+					}
+					
+					Income currIncome = null;
+					
+					// add the period to the next date the scheduled transaction is to be made until we have covered all the scheduled transactions
+					while (nextDate.getTime().getTime() < currentDate.getTime() ) {
+						System.out.println("addedexpense");
+						currIncome = new Income(incomeOwner, incomeAmount, incomeTags,
+								new SimpleDateFormat("yyyy-MM-dd").format(nextDate.getTime()), incomeDescription, id);
+						
+						Income.add(currIncome);
+						System.out.println("months" + months + "days" + days);
+						System.out.println(nextDate.getTime().toString());
+						nextDate.add(Calendar.DATE, (int) days);
+						nextDate.add(Calendar.MONTH, (int) months);
+						System.out.println(nextDate.getTime().toString());
+					}
 				}
 				
-				Income currIncome = null;
-				
-				// add the period to the next date the scheduled transaction is to be made until we have covered all the scheduled transactions
-				while (nextDate.getTime().getTime() < currentDate.getTime() ) {
-					
-					currIncome = new Income(incomeOwner, incomeAmount, incomeTags,
-							new SimpleDateFormat("yyyy-MM-dd").format(nextDate), incomeDescription);
-					
-					Income.add(currIncome);
-					
-					nextDate.add(Calendar.DATE, (int) days);
-					nextDate.add(Calendar.MONTH, (int) months);
-				}
-				
-				rs.updateDate("date_last", new java.sql.Date(nextDate.getTime().getTime()));
-				rs.updateRow();
-				rs.next();
+				// update date in scheduled incomes table
+				ps1 = connection.prepareStatement("UPDATE scheduled_incomes SET date_next = ? WHERE id = ?");
+				ps1.setDate(1, new java.sql.Date(nextDate.getTime().getTime()));
+				ps1.setLong(2, id);
+				ps1.executeUpdate();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -24,9 +24,9 @@ create table accounts (
 --    foreign key (owner) references users(id)    
 -- };
 
-create table incomes_scheduled (
+create table scheduled_incomes (
 	id bigint not null auto_increment,
-	date_last date,
+	date_next date,
 	period bigint,
 
 	primary key (id)
@@ -43,7 +43,7 @@ create table incomes (
 	
 	primary key (id),
 	foreign key (owner) references accounts(id),
-	foreign key (scheduler) references incomes_scheduled(id)
+	foreign key (scheduler) references scheduled_incomes(id)
 );
 
 create table incomes_tags (
@@ -66,9 +66,9 @@ create table incomes_tags_map (
 
 
 
-create table expenses_scheduled (
+create table scheduled_expenses (
 	id bigint not null auto_increment,
-	date_last date,
+	date_next date,
 	period bigint,
 
 	primary key (id)
@@ -84,7 +84,7 @@ create table expenses (
     
     primary key (id),
 	foreign key (owner) references accounts(id),
-	foreign key (scheduler) references expenses_scheduled(id)
+	foreign key (scheduler) references scheduled_expenses(id)
 );
 
 create table expenses_tags (

@@ -22,7 +22,7 @@ public class Global extends GlobalSettings {
         ActorRef scheduleRef = Akka.system().actorOf(Props.create(ScheduleActor.class));
         
         Akka.system().scheduler().schedule(Duration.Zero(),
-        		Duration.create(5, TimeUnit.SECONDS),
+        		Duration.create(60, TimeUnit.SECONDS),
         		scheduleRef,
         		"Scheduled Tasks",
         		Akka.system().dispatcher(), null);
