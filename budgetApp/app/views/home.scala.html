@@ -1,4 +1,4 @@
-@(budgets: List[BudgetBar])
+@(incomeTags: List[String], expenseTags: List[String], budgets: List[BudgetBar])
 
 @import helper._
 
@@ -57,10 +57,9 @@
 	  	
 	  	<div class="form-group">
 	  		<div class="col-lg-4">
-		  		<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('food')">food</button>
- 				<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('transport')">transport</button>
- 				<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('present')">present</button>
- 				<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('stationary')">stationary</button>				
+	  			@for(tagName <- expenseTags) {
+  					<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('@tagName')">@tagName</button>
+  				}		
 			</div>
 		</div>		
 
@@ -116,10 +115,9 @@
 	  	
 	  	<div class="form-group">
 	  		<div class="col-lg-4">
-		  		<button type="button" class="btn btn-default btn-sm" onclick="addIncomeTag('ebay')">ebay</button>
- 				<button type="button" class="btn btn-default btn-sm" onclick="addIncomeTag('steam')">steam</button>
- 				<button type="button" class="btn btn-default btn-sm" onclick="addIncomeTag('freelance')">freelance</button>
- 				<button type="button" class="btn btn-default btn-sm" onclick="addIncomeTag('ibm')">ibm</button>				
+		  		@for(tagName <- incomeTags) {
+  					<button type="button" class="btn btn-default btn-sm" onclick="addIncomeTag('@tagName')">@tagName</button>
+  				}			
 			</div>
 		</div>		
 
@@ -181,10 +179,9 @@
 	  	
 	  	<div class="form-group">
 	  		<div class="col-lg-4">
-		  		<button type="button" class="btn btn-default btn-sm" onclick="addBudgetTag('food')">food</button>
- 				<button type="button" class="btn btn-default btn-sm" onclick="addBudgetTag('transport')">transport</button>
- 				<button type="button" class="btn btn-default btn-sm" onclick="addBudgetTag('present')">present</button>
- 				<button type="button" class="btn btn-default btn-sm" onclick="addBudgetTag('stationary')">stationary</button>				
+		  		@for(tagName <- expenseTags) {
+  					<button type="button" class="btn btn-default btn-sm" onclick="addBudgetTag('@tagName')">@tagName</button>
+  				}			
 			</div>
 		</div>		
 
@@ -305,9 +302,11 @@
 			
 
 			$("#income_tags").tagsManager({
+				maxTags: 1,
 				hiddenTagListName: 'income_tag_list'
 			});
 			$("#expense_tags").tagsManager({
+				maxTags: 1,
 				hiddenTagListName: 'expense_tag_list'
 			});
 			$("#budget_tags").tagsManager({

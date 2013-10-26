@@ -32,153 +32,160 @@
 		</div><!-- /.navbar-collapse -->
 	</nav>
         
-        <!-- Centred content -->
-        <div class="centredContent">
-            <div class="page-header">
-                <p class="alignLeft"><h1>Income Overview</h1></p>
-                <p class="alignRight">
-                    <a data-toggle="modal" href="#createBudgetModal" class="btn btn-primary btn-lg button1"><span class="glyphicon glyphicon-plus"></span></a>
-                </p>
-            </div>
-
-            <div class="row paddingtopBottom">
-                <!-- Search bar -->
-                <form class="form-inline alignLeft" role="search">
-                  <div class="form-group">
-                    <input type="text" class="form-control roundedBorder" placeholder="Search by keyword">
-                  </div>
-                  <button type="submit" class="btn btn-default roundedBorder"><span class="glyphicon glyphicon-search"></span></button>
-                </form>
-                
-                <!-- Page navigation -->
-                <ul class="pagination alignRight roundedBorder">
-                  <li><a href="#">&laquo;</a></li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li><a href="#">4</a></li>
-                  <li><a href="#">5</a></li>
-                  <li><a href="#">&raquo;</a></li>
-                </ul>
-            </div>
+		<!-- Centred content -->
+	<div class="centredContent">
+		<div class="page-header">
+			<p class="alignLeft"><h1>Income Overview
+				<p class="alignRight">
+				<a data-toggle="modal" href="#createBudgetModal" class="btn btn-primary btn-lg button1"><span class="glyphicon glyphicon-plus"></span></a>
+			</p>
+			</h1></p>
+		</div>
+		          
+		<div class="row paddingtopBottom">
+		<!-- Search bar -->
+		<form class="form-inline alignLeft" role="search">
+			<div class="form-group">
+				<input type="text" class="form-control roundedBorder" placeholder="Search by keyword">
+			</div>
+			<button type="submit" class="btn btn-default roundedBorder"><span class="glyphicon glyphicon-search"></span></button>
+		</form>
+		
+		<!-- Page navigation -->
+		<ul class="pagination alignRight roundedBorder">
+			<li><a href="#">&laquo;</a></li>
+			<li><a href="#">1</a></li>
+			<li><a href="#">2</a></li>
+			<li><a href="#">3</a></li>
+			<li><a href="#">4</a></li>
+			<li><a href="#">5</a></li>
+			<li><a href="#">&raquo;</a></li>
+		</ul>
+	</div>
             
-            <!-- Filters -->
-            <form class="form-inline" role="form">
-                <div class="form-group">Filter by: </div>
-                
-                <div class="form-group">
-                    <select class="form-control roundedBorder">
-                      <option value="" selected disabled>Period</option>
-                      <option>Current week</option>
-                      <option>Current month</option>
-                      <option>Last 31 days</option>
-                      <option>Last 60 days</option>
-                      <option>Last 90 Days</option>
-                      <option>All</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <select class="form-control roundedBorder">
-                      <option value="" selected disabled>Budget</option>
-                      <option>Budget 1</option>
-                      <option>Budget 2</option>
-                      <option>Budget 3</option>
-                      <option>All</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <select class="form-control roundedBorder">
-                      <option value="" selected disabled>Category</option>
-                      <option>Salary</option>
-                      <option>Awards</option>
-                      <option>Selling</option>
-                      <option>All</option>
-                    </select>
-                </div>
-            </form>
+	<!-- Filters -->
+	<form class="form-inline" role="form">
+	    <div class="form-group">Filter by: </div>
+	    
+	    <div class="form-group">
+	        <select class="form-control roundedBorder">
+				<option value="" selected disabled>Period</option>
+				<option>Current week</option>
+				<option>Current month</option>
+				<option>Last 31 days</option>
+				<option>Last 60 days</option>
+				<option>Last 90 Days</option>
+				<option>All</option>
+	        </select>
+	    </div>
+	    
+	    <div class="form-group">
+	        <select class="form-control roundedBorder">
+				<option value="" selected disabled>Budget</option>
+				<option>Budget 1</option>
+				<option>Budget 2</option>
+				<option>Budget 3</option>
+				<option>All</option>
+	        </select>
+	    </div>
+	    
+	    <div class="form-group">
+	        <select class="form-control roundedBorder">
+				<option value="" selected disabled>Category</option>
+				<option>Salary</option>
+				<option>Awards</option>
+				<option>Selling</option>
+				<option>All</option>
+	        </select>
+	    </div>
+	</form>
         
-            <hr>
+	<br>
         
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Income Items</h3>
-                </div>
-                <table class="table">
-                    <tr>
-                        <td><b>Date</b></td>
-                        <td><b>Item</b></td>
-                        <td><b>Category</b></td>
-                        <td><b>Amount</b></td>
-                    </tr>
-                    <tr>
-                        <td>dd/mm/yy</td>
-                        <td>Item</td>
-                        <td>Category</td>
-                        <td>$xx.xx</td>
-                    </tr>
-                    <tr>
-                        <td>dd/mm/yy</td>
-                        <td>Item</td>
-                        <td>Category</td>
-                        <td>$xx.xx</td>
-                    </tr>
-                </table>
-            </div>
+	<div class="panel panel-success">
+	    <div class="panel-heading">
+	        <h3 class="panel-title">Income Items</h3>
+	    </div>
+	    <table class="table">
+	        <tr>
+	            <td><b>Date</b></td>
+	            <td><b>Item</b></td>
+	            <td><b>Category</b></td>
+	            <td><b>Amount</b></td>
+	        </tr>
+	        <tr>
+	            <td>dd/mm/yy</td>
+	            <td>Item</td>
+	            <td>Category</td>
+	            <td>$xx.xx</td>
+	        </tr>
+	        <tr>
+	            <td>dd/mm/yy</td>
+	            <td>Item</td>
+	            <td>Category</td>
+	            <td>$xx.xx</td>
+	        </tr>
+	    </table>
+	</div>
         
-            <hr>
-    }
+	<br>
+	
+	<!-- Graph -->
+    <div class="pieGraph" title="Income Categories for Budget 1" tags="Job at google,Tax return,Investment home,Paid for being good looking,Coins I found on the ground,Others" tagValues="45.0,26.8,12.8,8.5,6.2,0.7"></div>
+    <div class="pieGraph" title="Income Categories for Budget 2" tags="Food,Present,Coolbeans,Flying Helicopter" tagValues="10.0,6.0,5.0,2.0"></div>
 
-            <!-- Graph -->
-            <div id="incomeGraph" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-                
-                <script>
-                
-                $(function () {
-                    $('#incomeGraph').highcharts({
-                        chart: {
-                            plotBackgroundColor: '#e9f8e8',
-                            plotBorderWidth: null,
-                            plotShadow: false
-                        },
-                        title: {
-                            text: 'Income for Budget 1'
-                        },
-                        tooltip: {
-                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                        },
-                        plotOptions: {
-                            pie: {
-                                allowPointSelect: true,
-                                cursor: 'pointer',
-                                dataLabels: {
-                                    enabled: true,
-                                    color: '#000000',
-                                    connectorColor: '#000000',
-                                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                                }
+    <script>
+            
+        $(document).ready(function() {
+            $('.pieGraph').each(function() {
+                var options = {
+                    chart: {
+                        plotBackgroundColor: '#e9f8e8',
+                        plotBorderWidth: null,
+                        plotShadow: false
+                    },
+                    title: {
+                        text: $(this).attr('title')
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                color: '#000000',
+                                connectorColor: '#000000',
+                                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                             }
-                        },
-                        series: [{
-                            type: 'pie',
-                            name: 'Income share',
-                            data: [
-                                ['Job at google',   45.0],
-                                ['Tax return',       26.8],
-                                {
-                                    name: 'Investment home',
-                                    y: 12.8,
-                                    sliced: true,
-                                    selected: true
-                                },
-                                ['Paid for being good looking',    8.5],
-                                ['Coins I found on the ground',     6.2],
-                                ['Others',   0.7]
-                            ]
-                        }]
-                    });
-                });
+                        }
+                    },
+                    series: [{
+                        type: 'pie',
+                        name: 'Proportion',
+                        data: []
+                    }]
+                };
                 
-                </script>
-        </div>
+                var tagArray = $(this).attr('tags').split(',');
+                var tagValues = $(this).attr('tagValues').split(',');
+                
+                for(var i=0; i<tagArray.length; i++){
+                   options.series[0].data.push({name: tagArray[i], y: parseFloat(tagValues[i])});
+                }
+                
+                $(this).highcharts(options);
+
+            });
+        });
+            
+    </script>
+        
+}
+
+
+
+
+

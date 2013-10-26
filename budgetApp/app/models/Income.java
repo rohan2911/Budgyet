@@ -125,58 +125,6 @@ public class Income {
 				// this should never happen
 			}
 			
-			/*
-			
-			generatedKeys = ps1.getGeneratedKeys();
-			if (generatedKeys.next()) {
-				long income_id = generatedKeys.getLong(1);
-				
-				// insert the tag
-				// TODO: change this so that the income only has max. 1 tag
-				ps2 = connection.prepareStatement("insert into incomes_tags (owner, name) select * from (select ?, ?) as tmp "
-						+ "where not exists (select 1 from incomes_tags where owner = ? and name = ?)");
-				ps2.setLong(1, income.owner);
-				ps2.setLong(3, income.owner);
-				
-				ps2.setString(2, income.tag);
-				ps2.setString(4, income.tag);
-				ps2.executeUpdate();
-				
-				
-				Iterator<String> tags_it = income.tags.iterator();
-				while (tags_it.hasNext()) {
-					String tag = tags_it.next();
-					ps2.setString(2, income.tag);
-					ps2.setString(4, income.tag);
-					ps2.executeUpdate();
-				}
-				
-				// get tag ids
-				String sql3 = "select id from incomes_tags where owner = ? and (name = ?";
-				for (int i=0; i<income.tags.size()-1; i++) {
-					sql3 += " OR name = ?";
-				}
-				sql3 += ")";
-				ps3 = connection.prepareStatement(sql3);
-				ps3.setLong(1, income.owner);
-				for (int i=0; i<income.tags.size(); i++) {
-					ps3.setString(i+2, income.tags.get(i));
-				}
-				rs = ps3.executeQuery();
-
-					
-				// insert the income tag mapping
-				ps4 = connection.prepareStatement("insert into incomes_tags_map (income, tag) values (?, ?)");
-				ps4.setLong(1, income_id);
-				while (rs.next()) {
-					ps4.setLong(2, rs.getLong("id"));
-					ps4.executeUpdate();
-				}
-
-					
-			}
-			*/
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -224,22 +172,73 @@ public class Income {
 		ResultSet rs = null;
 		
 		try {
-			ps = connection.prepareStatement(" select i.amount, i.description, i.date_occur, it.name from incomes i"
-					+ "	join incomes_tags_map im on i.id = im.income"
-					+ "	join incomes_tags it on im.tag = it.id"
-					+ "	where i.owner = ?;");
+			ps = connection.prepareStatement("select i.amount, i.description, i.date_occur, i.scheduler, it.name from incomes i"
+					+ "	join incomes_tags it on i.tag = it.id where i.owner = ? order by i.date_occur desc;");
 			ps.setLong(1, Long.parseLong(accId));
 			rs = ps.executeQuery();
 			
-			while(rs.next()) {
-				Income i = new Income(accId, accId, accId, accId, accId, new Long(1));
+			while (rs.next()) {
+				Income i = new Income(accId, rs.getBigDecimal("amount").toString(), rs.getString("name"), rs.getDate("date_occur").toString(), rs.getString("description"), (Long) rs.getLong("scheduler"));
+				incomes.add(i);
 			}
+			
+			// go through the list and sum up the incomes for each tag name
+			// get list containing distinct tag names
+			List<String> tagList = new ArrayList<String>();
+			/*for (Income i: incomes) {
+				if (!tagList.contains(i.tagName)) {
+					tagList.add(i.tagName);
+				}
+			}*/
+			
+			// query sql to sum the income amount for us
+			
+			// TODO: this method should just return the list of incomes..
+			// and a different method will take in that list and calculate the rest of the stuff.
+			
+			
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
-		
 		return incomes;
+	}
+		
+	public static List<String> getTags(String accId) {
+		List<String> tagList = new ArrayList<String>();
+		
+		Connection connection = DB.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			ps = connection.prepareStatement("SELECT name FROM incomes_tags WHERE owner = ?");
+			ps.setLong(1, Long.parseLong(accId));
+			rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				tagList.add(rs.getString("name"));
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (ps != null) {
+					ps.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return tagList;
 	}
 }

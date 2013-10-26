@@ -24,8 +24,11 @@ public class Expenses extends Controller {
 	    	long id = 0;
 			ScheduledExpense scheduledExpense = new ScheduledExpense(date, repeat, session().get("connected_id"), amount, description, tags);
 			id = ScheduledExpense.add(scheduledExpense);
-			
-			ScheduledExpense.init(id);
+			if (id == -1) {
+				return redirect(routes.Application.index());
+			} else {
+				ScheduledExpense.init(id);	
+			}
 		} else {
 			// create only income
 			Expense expense = new Expense(session().get("connected_id"), amount, tags, date, description);

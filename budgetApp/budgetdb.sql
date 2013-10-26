@@ -24,17 +24,6 @@ create table accounts (
 --    foreign key (owner) references users(id)    
 -- };
 
-create table scheduled_incomes (
-	id bigint not null auto_increment,
-	owner bigint not null,
-	date_next date,
-	period bigint,
-	income_amount decimal(16, 2),
-    income_description varchar(256),
-
-	primary key (id),
-	foreign key (owner) references accounts(id)    
-);
 
 
 create table incomes_tags (
@@ -45,6 +34,21 @@ create table incomes_tags (
 	primary key (id),
 	foreign key (owner) references accounts(id)
 );
+
+create table scheduled_incomes (
+	id bigint not null auto_increment,
+	owner bigint not null,
+	date_next date,
+	period int,
+	income_amount decimal(16, 2),
+    income_description varchar(256),
+    tag bigint,
+
+	primary key (id),
+	foreign key (owner) references accounts(id),
+	foreign key (tag) references incomes_tags(id)
+);
+
 
 create table incomes (
 	id bigint not null auto_increment,
@@ -82,17 +86,7 @@ create table incomes (
 
 
 
-create table scheduled_expenses (
-	id bigint not null auto_increment,
-	owner bigint not null,
-	date_next date,
-	period bigint,
-	expense_amount decimal(16, 2),
-    expense_description varchar(256),
 
-	primary key (id),
-	foreign key (owner) references accounts(id)    
-);
 
 create table expenses_tags (
 	id bigint not null auto_increment,
@@ -101,6 +95,20 @@ create table expenses_tags (
 	
 	primary key (id),
 	foreign key (owner) references accounts(id)
+);
+
+create table scheduled_expenses (
+	id bigint not null auto_increment,
+	owner bigint not null,
+	date_next date,
+	period int,
+	expense_amount decimal(16, 2),
+    expense_description varchar(256),
+    tag bigint,
+
+	primary key (id),
+	foreign key (owner) references accounts(id), 
+	foreign key (tag) references expenses_tags(id)
 );
 
 

@@ -15,5 +15,6 @@ public class ScheduleActor extends UntypedActor {
 	@Override
 	public void onReceive(Object arg0) throws Exception {
 		ScheduledIncome.scheduledTask();
+		ScheduledExpense.scheduledTask();
 	}
 }

@@ -9,7 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import play.db.DB;
 
@@ -26,7 +28,7 @@ public class Expense {
 	 * Constructor for repeating expenses.
 	 * @param owner id of the owner (currently logged in user id)
 	 * @param amount user specified amount of this expense
-	 * @param tag the tag associated with this expense
+	 * @param tag the user specified tag name associated with this expense
 	 * @param date_occur user specified date of this expense
 	 * @param description user specified description of this expense
 	 * @param scheduler id of the schedular to be used for this repeating expense
@@ -113,51 +115,7 @@ public class Expense {
 				}
 				psInsExp.setLong(6, tagId);
 				psInsExp.executeUpdate();
-				
-			} else {
-				// this should never happen
 			}
-
-			/*
-			generatedKeys = ps1.getGeneratedKeys();
-			if (generatedKeys.next()) {
-				long expense_id = generatedKeys.getLong(1);
-
-				// insert the tags
-				ps2 = connection.prepareStatement("insert into expenses_tags (owner, name) select * from (select ?, ?) as tmp where "
-						+ "not exists (select 1 from expenses_tags where owner = ? and name = ?)");
-				ps2.setLong(1, expense.owner);
-				ps2.setLong(3, expense.owner);
-				Iterator<String> tags_it = expense.tagName.iterator();
-				while (tags_it.hasNext()) {
-					String tag = tags_it.next();
-					ps2.setString(2, tag);
-					ps2.setString(4, tag);
-					ps2.executeUpdate();
-				}
-				
-				// get tag ids
-				String sql3 = "select id from expenses_tags where owner = ? and (name = ?";
-				for (int i=0; i<expense.tagName.size()-1; i++) {
-					sql3 += " OR name = ?";
-				}
-				sql3 += ")";
-				ps3 = connection.prepareStatement(sql3);
-				ps3.setLong(1, expense.owner);
-				for (int i=0; i<expense.tagName.size(); i++) {
-					ps3.setString(i+2, expense.tagName.get(i));
-				}
-				rs = ps3.executeQuery();
-				
-				// insert the expense tag mapping
-				ps4 = connection.prepareStatement("insert into expenses_tags_map (expense, tag) values (?, ?)");
-				ps4.setLong(1, expense_id);
-				while (rs.next()) {
-					ps4.setLong(2, rs.getLong("id"));
-					ps4.executeUpdate();
-				}
-			}
-			*/
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -181,8 +139,45 @@ public class Expense {
 				e.printStackTrace();
 			}
 		}
-		
 		return true;
+	}
+	
+	public static List<String> getTags(String accId) {
+		List<String> tagList = new ArrayList<String>();
+		
+		Connection connection = DB.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			ps = connection.prepareStatement("SELECT name FROM expenses_tags WHERE owner = ?");
+			ps.setLong(1, Long.parseLong(accId));
+			rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				tagList.add(rs.getString("name"));
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (ps != null) {
+					ps.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return tagList;
 	}
 	
 }
