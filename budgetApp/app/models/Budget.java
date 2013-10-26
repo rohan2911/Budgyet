@@ -19,7 +19,6 @@ import play.db.DB;
 
 /**
  * Budget model
- * @author Hana
  *
  */
 public class Budget {
@@ -31,9 +30,16 @@ public class Budget {
 	public Date date_start;
 	public Date date_end;
 	public String description;
-
+	
 	/**
 	 * Constructor
+	 * @param owner owner's id
+	 * @param title the budget title
+	 * @param amount amount allocated for this budget
+	 * @param tags list of tags associated with this budget, in one string, separated by commas
+	 * @param date_start starting date of the budget
+	 * @param date_end ending date of the budget
+	 * @param description budget description
 	 */
 	public Budget(String owner, String title, String amount, String tags, String date_start, String date_end, String description) {
 		this.owner = Long.parseLong(owner);
@@ -54,6 +60,7 @@ public class Budget {
 
 	/**
 	 * Adds this budget to the db
+	 * @param budget the budget object containing the information to be added to db.
 	 * @return
 	 */
 	public static boolean add(Budget budget) {
@@ -151,18 +158,25 @@ public class Budget {
 
 	}
 	
-	/*
-	 * return list of budgets for the user
-	 * for each budget,
-	 * 		get its associated tags, 
-	 * 		get expenses with those tags, 
-	 * 		for each expense amount, add to total $ spent
-	 * 		then get total expenditure
-	 * 
-	 * select * from budgets where owner = owner
-	 * 		
+
+	/**
+	 * Fetches the list of budgets for the specified owner.
+	 * @param owner the id of the owner to get the budgets of
+	 * @return List of BudgetBar, which is just a class that holds budget information.
 	 */
 	public static List<BudgetBar> getProgressBudgets(String owner) {
+		
+		/*
+		 * return list of budgets for the user
+		 * for each budget,
+		 * 		get its associated tags, 
+		 * 		get expenses with those tags, 
+		 * 		for each expense amount, add to total $ spent
+		 * 		then get total expenditure
+		 * 
+		 * select * from budgets where owner = owner
+		 * 		
+		 */
 		Connection connection = DB.getConnection();
 		PreparedStatement ps1 = null;
 		PreparedStatement ps2 = null;
@@ -201,12 +215,16 @@ public class Budget {
 					tag_ids.add(rs2.getLong("tag"));
 				}
 				
-				String sql3 = "select amount from expenses join expenses_tags_map on id = expense where (tag = ?";
+				// get all the expenses tag mapping with given tag ids
+//				String sql3 = "select amount from expenses join expenses_tags_map on id = expense where (tag = ?";
+				String sql3 = "select amount from expenses where (tag = ?";
 				for (int i=0; i<tag_ids.size()-1; i++) {
 					sql3 += " OR tag = ?";
 				}
 				sql3 += ") and date_occur >= ? and date_occur <= ?";
 				ps3 = connection.prepareStatement(sql3);
+				
+				// fill the preparedstatement in with the tag ids, then execute
 				int i=1;
 				for (; i<=tag_ids.size(); i++) {
 					ps3.setLong(i, tag_ids.get(i-1));
@@ -215,6 +233,7 @@ public class Budget {
 				ps3.setString(i+1, bb.getDateEnd());
 				rs3 = ps3.executeQuery();
 				
+				// sum up all the expense amounts
 				BigDecimal totalAmt = new BigDecimal("0.00").setScale(2, RoundingMode.HALF_UP);
 				while(rs3.next()) {
 					totalAmt = totalAmt.add(rs3.getBigDecimal("amount"));

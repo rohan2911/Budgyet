@@ -37,19 +37,6 @@ create table scheduled_incomes (
 );
 
 
-create table incomes (
-	id bigint not null auto_increment,
-	owner bigint not null,
-	scheduler bigint,
-	amount decimal(16, 2),
-    description varchar(256),
-    date_occur date,
-	
-	primary key (id),
-	foreign key (owner) references accounts(id),
-	foreign key (scheduler) references scheduled_incomes(id)
-);
-
 create table incomes_tags (
 	id bigint not null auto_increment,
 	owner bigint not null,
@@ -59,23 +46,39 @@ create table incomes_tags (
 	foreign key (owner) references accounts(id)
 );
 
-create table incomes_tags_map (
-	income bigint not null,
-	tag bigint not null,
+create table incomes (
+	id bigint not null auto_increment,
+	owner bigint not null,
+	scheduler bigint,
+	amount decimal(16, 2),
+    description varchar(256),
+    date_occur date,
+    tag bigint,
 	
-	primary key (income, tag),
-	foreign key (income) references incomes(id),
+	primary key (id),
+	foreign key (owner) references accounts(id),
+	foreign key (scheduler) references scheduled_incomes(id),
 	foreign key (tag) references incomes_tags(id)
 );
 
-create table scheduled_incomes_tags_map (
-	scheduled_income bigint not null,
-	tag bigint not null,
+
+-- create table incomes_tags_map (
+-- 	income bigint not null,
+-- 	tag bigint not null,
 	
-	primary key (scheduled_income, tag),
-	foreign key (scheduled_income) references scheduled_incomes(id),
-	foreign key (tag) references incomes_tags(id)
-);
+-- 	primary key (income, tag),
+-- 	foreign key (income) references incomes(id),
+-- 	foreign key (tag) references incomes_tags(id)
+-- );
+
+-- create table scheduled_incomes_tags_map (
+-- 	scheduled_income bigint not null,
+-- 	tag bigint not null,
+	
+-- 	primary key (scheduled_income, tag),
+-- 	foreign key (scheduled_income) references scheduled_incomes(id),
+-- 	foreign key (tag) references incomes_tags(id)
+-- );
 
 
 
@@ -91,19 +94,6 @@ create table scheduled_expenses (
 	foreign key (owner) references accounts(id)    
 );
 
-create table expenses (
-    id bigint not null auto_increment,
-    owner bigint not null,
-    scheduler bigint,
-    amount decimal(16, 2),
-    description varchar(256),
-    date_occur date,
-    
-    primary key (id),
-	foreign key (owner) references accounts(id),
-	foreign key (scheduler) references scheduled_expenses(id)
-);
-
 create table expenses_tags (
 	id bigint not null auto_increment,
 	owner bigint,
@@ -113,23 +103,40 @@ create table expenses_tags (
 	foreign key (owner) references accounts(id)
 );
 
-create table expenses_tags_map (
-	expense bigint not null,
-	tag bigint not null,
 
-	primary key (expense, tag),
-	foreign key (expense) references expenses(id),
+create table expenses (
+    id bigint not null auto_increment,
+    owner bigint not null,
+    scheduler bigint,
+    amount decimal(16, 2),
+    description varchar(256),
+    date_occur date,
+    tag bigint,
+    
+    primary key (id),
+	foreign key (owner) references accounts(id),
+	foreign key (scheduler) references scheduled_expenses(id),
 	foreign key (tag) references expenses_tags(id)
 );
 
-create table scheduled_expenses_tags_map (
-	scheduled_expense bigint not null,
-	tag bigint not null,
 
-	primary key (scheduled_expense, tag),
-	foreign key (scheduled_expense) references scheduled_expenses(id),
-	foreign key (tag) references expenses_tags(id)
-);
+-- create table expenses_tags_map (
+-- 	expense bigint not null,
+-- 	tag bigint not null,
+
+-- 	primary key (expense, tag),
+-- 	foreign key (expense) references expenses(id),
+-- 	foreign key (tag) references expenses_tags(id)
+-- );
+
+-- create table scheduled_expenses_tags_map (
+-- 	scheduled_expense bigint not null,
+-- 	tag bigint not null,
+
+-- 	primary key (scheduled_expense, tag),
+-- 	foreign key (scheduled_expense) references scheduled_expenses(id),
+-- 	foreign key (tag) references expenses_tags(id)
+-- );
 
 
 create table budgets (

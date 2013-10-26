@@ -99,6 +99,11 @@ public class Account {
 		return errors.isEmpty() ? null : errors;
 	}
 	
+	/**
+	 * 
+	 * @param account
+	 * @return
+	 */
 	public static boolean add(Account account) {
 		Connection connection = DB.getConnection();
 		PreparedStatement ps = null;

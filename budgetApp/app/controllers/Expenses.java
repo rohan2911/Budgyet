@@ -1,12 +1,8 @@
 package controllers;
 
-import models.Account;
 import models.Expense;
-import models.Income;
 import models.ScheduledExpense;
-import models.ScheduledIncome;
 import play.data.DynamicForm;
-import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
@@ -32,7 +28,7 @@ public class Expenses extends Controller {
 			ScheduledExpense.init(id);
 		} else {
 			// create only income
-			Expense expense = new Expense(session().get("connected_id"), amount, tags, date, description, (Long) null);
+			Expense expense = new Expense(session().get("connected_id"), amount, tags, date, description);
 			Expense.add(expense);
 		}
     	

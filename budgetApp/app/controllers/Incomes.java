@@ -1,7 +1,5 @@
 package controllers;
 
-
-import models.Budget;
 import models.Income;
 import models.ScheduledIncome;
 import play.data.DynamicForm;
@@ -30,7 +28,7 @@ public class Incomes extends Controller {
 			ScheduledIncome.init(id);
 		} else {
 			// create only income
-			Income income = new Income(session().get("connected_id"), amount, tags, date, description, (Long) null);
+			Income income = new Income(session().get("connected_id"), amount, tags, date, description);
 			Income.add(income);
 		}
 		
