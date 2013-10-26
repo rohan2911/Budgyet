@@ -2,6 +2,9 @@ package controllers;
 
 import models.Account;
 import models.Expense;
+import models.Income;
+import models.ScheduledExpense;
+import models.ScheduledIncome;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.mvc.Controller;
@@ -19,9 +22,19 @@ public class Expenses extends Controller {
     	String description = form.get("expense_description");
 		
     	String repeat = form.get("expense_repeat");
-		
-    	Expense expense = new Expense(session().get("connected_id"), amount, tags, date, description);
-		Expense.add(expense);
+    	
+		if (repeat != null && !repeat.equals("0")) {
+			// create with scheduled repeat
+	    	long id = 0;
+			ScheduledExpense scheduledExpense = new ScheduledExpense(date, repeat, session().get("connected_id"), amount, description, tags);
+			id = ScheduledExpense.add(scheduledExpense);
+			
+			ScheduledExpense.init(id);
+		} else {
+			// create only income
+			Expense expense = new Expense(session().get("connected_id"), amount, tags, date, description, (Long) null);
+			Expense.add(expense);
+		}
     	
 		return redirect(routes.Application.index());
 	}

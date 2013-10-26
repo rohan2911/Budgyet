@@ -24,12 +24,10 @@ public class Incomes extends Controller {
 		if (repeat != null && !repeat.equals("0")) {
 			// create with scheduled repeat
 	    	long id = 0;
-			ScheduledIncome scheduledIncome = new ScheduledIncome(date, repeat);
+			ScheduledIncome scheduledIncome = new ScheduledIncome(date, repeat, session().get("connected_id"), amount, description, tags);
 			id = ScheduledIncome.add(scheduledIncome);
 			
-			//TODO add method that runs scheduled task on only this new record
-			Income income = new Income(session().get("connected_id"), amount, tags, date, description, id);
-			Income.add(income);
+			ScheduledIncome.init(id);
 		} else {
 			// create only income
 			Income income = new Income(session().get("connected_id"), amount, tags, date, description, (Long) null);

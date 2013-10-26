@@ -26,10 +26,14 @@ create table accounts (
 
 create table scheduled_incomes (
 	id bigint not null auto_increment,
+	owner bigint not null,
 	date_next date,
 	period bigint,
+	income_amount decimal(16, 2),
+    income_description varchar(256),
 
-	primary key (id)
+	primary key (id),
+	foreign key (owner) references accounts(id)    
 );
 
 
@@ -64,14 +68,27 @@ create table incomes_tags_map (
 	foreign key (tag) references incomes_tags(id)
 );
 
+create table scheduled_incomes_tags_map (
+	scheduled_income bigint not null,
+	tag bigint not null,
+	
+	primary key (scheduled_income, tag),
+	foreign key (scheduled_income) references scheduled_incomes(id),
+	foreign key (tag) references incomes_tags(id)
+);
+
 
 
 create table scheduled_expenses (
 	id bigint not null auto_increment,
+	owner bigint not null,
 	date_next date,
 	period bigint,
+	expense_amount decimal(16, 2),
+    expense_description varchar(256),
 
-	primary key (id)
+	primary key (id),
+	foreign key (owner) references accounts(id)    
 );
 
 create table expenses (
@@ -105,6 +122,14 @@ create table expenses_tags_map (
 	foreign key (tag) references expenses_tags(id)
 );
 
+create table scheduled_expenses_tags_map (
+	scheduled_expense bigint not null,
+	tag bigint not null,
+
+	primary key (scheduled_expense, tag),
+	foreign key (scheduled_expense) references scheduled_expenses(id),
+	foreign key (tag) references expenses_tags(id)
+);
 
 
 create table budgets (

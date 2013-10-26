@@ -24,8 +24,9 @@ public class Expense {
 	public List<String> tags;
 	public Date date_occur;
 	public String description;
+	public long scheduler;
 	
-	public Expense(String owner, String amount, String tags, String date_occur, String description) {
+	public Expense(String owner, String amount, String tags, String date_occur, String description, long scheduler) {
 		this.owner = Long.parseLong(owner);
 		this.amount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
 		this.tags = new ArrayList<String>(Arrays.asList(tags.split(",")));
@@ -37,6 +38,7 @@ public class Expense {
 			e.printStackTrace();
 		}
 		this.description = description;
+		this.scheduler = scheduler; 
 	}
 	
 	public static boolean add(Expense expense) {
@@ -51,11 +53,12 @@ public class Expense {
 		
 		try {
 			// insert the expense
-			ps1 = connection.prepareStatement("insert into expenses (owner, amount, description, date_occur) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			ps1 = connection.prepareStatement("insert into expenses (owner, amount, description, date_occur, scheduler) values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			ps1.setLong(1, expense.owner);
 			ps1.setBigDecimal(2, expense.amount);
 			ps1.setString(3, expense.description);
 			ps1.setDate(4, new java.sql.Date(expense.date_occur.getTime()));
+			ps1.setLong(5, expense.scheduler);
 			ps1.executeUpdate();
 			
 			generatedKeys = ps1.getGeneratedKeys();
