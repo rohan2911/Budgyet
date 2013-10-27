@@ -25,6 +25,15 @@ a:hover {
     margin: 0 auto;
 }
 
+.modal-body {
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.panel-footer {
+    height:68px;
+}
+
 /* index.html, signup.html ---------------- */
 
 .loginForm {

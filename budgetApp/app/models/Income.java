@@ -17,6 +17,7 @@ import play.db.DB;
 
 public class Income {
 
+	public long id;
 	public long owner;
 	public BigDecimal amount;
 //	public List<String> tags;
@@ -24,7 +25,8 @@ public class Income {
 	public Date date_occur;
 	public String date_display;
 	public String description;
-	public Long scheduler;
+	public Long scheduler;	// id of the schedular assignmed to the income
+	public int period;	// time period of the schedule
 	
 	/**
 	 * Contructor for Income class.
@@ -49,6 +51,7 @@ public class Income {
 		}
 		this.description = description;
 		this.scheduler = scheduler;
+		this.period = 0;
 	}
 	
 	/**
@@ -72,6 +75,7 @@ public class Income {
 		}
 		this.description = desc;
 		this.scheduler = (Long) null;
+		this.period = 0;
 	}
 
 	/**
@@ -156,7 +160,8 @@ public class Income {
 	}
 
 	/**
-	 * Get all the incomes belonging to specified user
+	 * Get all the incomes belonging to specified user.
+	 * Used in displaying the list of incomes for the user (not the pie chart)
 	 * @param accId id number of the account from db
 	 * @return list of Incomes owned by the specified user.
 	 */
@@ -168,7 +173,7 @@ public class Income {
 		ResultSet rs = null;
 		
 		try {
-			ps = connection.prepareStatement("select i.amount, i.description, i.date_occur, i.scheduler, it.name from incomes i"
+			ps = connection.prepareStatement("select i.id, i.amount, i.description, i.date_occur, i.scheduler, it.name from incomes i"
 					+ "	join incomes_tags it on i.tag = it.id where i.owner = ? order by i.date_occur desc;");
 			ps.setLong(1, Long.parseLong(accId));
 			rs = ps.executeQuery();
@@ -176,7 +181,8 @@ public class Income {
 			while (rs.next()) {
 				Income i = new Income(accId, rs.getBigDecimal("amount").toString(), rs.getString("name"), 
 						rs.getDate("date_occur").toString(), rs.getString("description"), (Long) rs.getLong("scheduler"));
-				System.out.println("created:"+i.date_occur);
+				i.id = rs.getLong("id");
+//				System.out.println("created:"+i.date_occur);
 				incomes.add(i);
 			}
 		} catch (SQLException e) {
@@ -198,12 +204,14 @@ public class Income {
 				PreparedStatement ps = connection.prepareStatement("select sum(amount) as total from incomes i join incomes_tags it "
 						+ "on i.tag = it.id and it.owner = ? where it.name = ?");
 				ps.setLong(1, Long.parseLong(accId));
-				ps.setString(2, (tag));
+				ps.setString(2, tag);
 				ResultSet rs = ps.executeQuery();
 				BigDecimal amt = new BigDecimal("0.00");
 				String sum = "";
 				if (rs.next()) {
-					amt = amt.add(rs.getBigDecimal(1));
+					if (rs.getBigDecimal(1) != null) {
+						amt = rs.getBigDecimal(1);
+					}
 					sum = amt.toString();
 				}
 				tagSums.add(sum);
@@ -273,5 +281,68 @@ public class Income {
 		}
 		tags = tags.substring(0, tags.length()-1);
 		return tags;
+	}
+
+	/**
+	 * @param incId
+	 * @return the income by its id
+	 */
+	public static Income getById(Long accId, Long incId) {
+		Connection connection = DB.getConnection();
+		PreparedStatement ps = null;
+		PreparedStatement psSch = null;
+		ResultSet rs = null;
+		ResultSet rsSch = null;
+		
+		Income income = null;
+		
+		try {
+			ps = connection.prepareStatement("select * from incomes i join incomes_tags it on i.tag = it.id where i.id = ? and i.owner = ?");
+			ps.setLong(1, incId);
+			ps.setLong(2, accId);
+			rs = ps.executeQuery();
+			
+			if (rs.next()) {
+				income = new Income(accId.toString(), rs.getBigDecimal("amount").toString(), rs.getString("name"), 
+						rs.getDate("date_occur").toString(), rs.getString("description"), (Long) rs.getLong("scheduler"));
+				income.id = incId;
+				System.out.println("MY TAG:"+rs.getString("name"));
+//				System.out.println(income.amount);
+				if ((Long) rs.getLong("scheduler") != null) {
+					System.out.println("I HAVE A SCHEDULER:"+rs.getLong("scheduler"));
+					psSch = connection.prepareStatement("select period from scheduled_incomes where id = ?");
+					psSch.setLong(1, rs.getLong("scheduler"));
+					rsSch = psSch.executeQuery();
+					if (rsSch.next()) {
+						income.period = rsSch.getInt("period");
+					}
+				} else {
+					income.period = 0;
+				}
+			}
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (ps != null) {
+					ps.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		return income;
 	}
 }

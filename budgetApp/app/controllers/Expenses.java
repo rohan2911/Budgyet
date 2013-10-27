@@ -26,6 +26,7 @@ public class Expenses extends Controller {
 			// create with scheduled repeat
 	    	long id = 0;
 			ScheduledExpense scheduledExpense = new ScheduledExpense(date, repeat, session().get("connected_id"), amount, description, tags);
+//			scheduledExpense.period = Integer.parseInt(repeat);
 			id = ScheduledExpense.add(scheduledExpense);
 			if (id == -1) {
 				return redirect(routes.Application.index());

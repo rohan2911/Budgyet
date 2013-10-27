@@ -61,6 +61,7 @@
 	            <td><b>Item</b></td>
 	            <td><b>Category</b></td>
 	            <td><b>Amount</b></td>
+	            <td></td>
 	        </tr>
 	    	@for(exp <- expenses) {
 	        <tr>
@@ -73,6 +74,7 @@
 	            <td>@exp.description</td>
 	            <td>@exp.tagName</td>
 	            <td>@exp.amount</td>
+	            <td><a href="@routes.Expenses.showEditExpense(exp.id)"><button type="button" class="btn btn-default btn-xs">Edit</button></a></td>
 	        </tr>
 	        }
 	    </table>

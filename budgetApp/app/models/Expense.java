@@ -17,6 +17,7 @@ import play.db.DB;
 
 public class Expense {
 	
+	public long id;
 	public long owner;
 	public BigDecimal amount;
 	public String tagName;
@@ -24,6 +25,7 @@ public class Expense {
 	public String date_display;
 	public String description;
 	public Long scheduler;
+	public int period;	// time period of the schedule
 	
 	/**
 	 * Constructor for repeating expenses.
@@ -48,6 +50,7 @@ public class Expense {
 		}
 		this.description = description;
 		this.scheduler = scheduler; 
+		this.period = 0;
 	}
 	
 	/**
@@ -72,6 +75,7 @@ public class Expense {
 		}
 		this.description = desc;
 		this.scheduler = (Long) null;
+		this.period = 0;
 	}
 
 	public static boolean add(Expense expense) {
@@ -159,13 +163,15 @@ public class Expense {
 		ResultSet rs = null;
 		
 		try {
-			ps = connection.prepareStatement("select i.amount, i.description, i.date_occur, i.scheduler, it.name from expenses i"
+			ps = connection.prepareStatement("select i.id, i.amount, i.description, i.date_occur, i.scheduler, it.name from expenses i"
 					+ "	join expenses_tags it on i.tag = it.id where i.owner = ? order by i.date_occur desc;");
 			ps.setLong(1, Long.parseLong(accId));
 			rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				Expense i = new Expense(accId, rs.getBigDecimal("amount").toString(), rs.getString("name"), rs.getDate("date_occur").toString(), rs.getString("description"), (Long) rs.getLong("scheduler"));
+				Expense i = new Expense(accId, rs.getBigDecimal("amount").toString(), rs.getString("name"),
+						rs.getDate("date_occur").toString(), rs.getString("description"), (Long) rs.getLong("scheduler"));
+				i.id = rs.getLong("id");
 				expenses.add(i);
 			}
 		} catch (SQLException e) {
@@ -225,18 +231,23 @@ public class Expense {
 	public static List<String> getTagSum(String accId) {
 		List<String> tagSums = new ArrayList<String>();
 		List<String> tagNameList = getTags(accId);
+		
+		System.out.println(tagNameList);
 		Connection connection = DB.getConnection();
 		for (String tag: tagNameList) {
+			System.out.println("current tag:"+tag);
 			try {
 				PreparedStatement ps = connection.prepareStatement("select sum(amount) as total from expenses i join expenses_tags it "
 						+ "on i.tag = it.id and it.owner = ? where it.name = ?");
 				ps.setLong(1, Long.parseLong(accId));
-				ps.setString(2, (tag));
+				ps.setString(2, tag);
 				ResultSet rs = ps.executeQuery();
 				BigDecimal amt = new BigDecimal("0.00");
 				String sum = "";
 				if (rs.next()) {
-					amt = amt.add(rs.getBigDecimal(1));
+					if (rs.getBigDecimal(1) != null) {
+						amt = rs.getBigDecimal(1);
+					}
 					sum = amt.toString();
 				}
 				tagSums.add(sum);
