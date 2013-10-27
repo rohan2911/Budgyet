@@ -44,7 +44,12 @@
 	</form>
         
 	<br>
-        
+	
+   	<!-- Graph -->
+    <div class="pieGraph" title="Expense Overview" tags="@tagnames" tagValues="@tagamounts"></div>
+    
+    <br>
+    
 	<div class="panel panel-success">
 	    <div class="panel-heading">
 	        <h3 class="panel-title">Expense Items</h3>
@@ -72,12 +77,6 @@
 	        }
 	    </table>
 	</div>
-        
-	<br>
-	
-	<!-- Graph -->
-    <div class="pieGraph" title="Expense Overview" tags="@tagnames" tagValues="@tagamounts"></div>
-
     <script>
             
         $(document).ready(function() {
