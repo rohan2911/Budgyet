@@ -16,7 +16,8 @@ import java.util.List;
 import play.db.DB;
 
 public class Income {
-	
+
+	public long id;
 	public long owner;
 	public BigDecimal amount;
 //	public List<String> tags;
@@ -24,7 +25,8 @@ public class Income {
 	public Date date_occur;
 	public String date_display;
 	public String description;
-	public Long scheduler;
+	public Long scheduler;	// id of the schedular assignmed to the income
+	public int period;	// time period of the schedule
 	
 	/**
 	 * Contructor for Income class.
@@ -49,6 +51,7 @@ public class Income {
 		}
 		this.description = description;
 		this.scheduler = scheduler;
+		this.period = 0;
 	}
 	
 	/**
@@ -72,6 +75,7 @@ public class Income {
 		}
 		this.description = desc;
 		this.scheduler = (Long) null;
+		this.period = 0;
 	}
 
 	/**
@@ -242,7 +246,8 @@ public class Income {
 	}
 
 	/**
-	 * Get all the incomes belonging to specified user
+	 * Get all the incomes belonging to specified user.
+	 * Used in displaying the list of incomes for the user (not the pie chart)
 	 * @param accId id number of the account from db
 	 * @return list of Incomes owned by the specified user.
 	 */
@@ -254,7 +259,7 @@ public class Income {
 		ResultSet rs = null;
 		
 		try {
-			ps = connection.prepareStatement("select i.amount, i.description, i.date_occur, i.scheduler, it.name from incomes i"
+			ps = connection.prepareStatement("select i.id, i.amount, i.description, i.date_occur, i.scheduler, it.name from incomes i"
 					+ "	join incomes_tags it on i.tag = it.id where i.owner = ? order by i.date_occur desc;");
 			ps.setLong(1, Long.parseLong(accId));
 			rs = ps.executeQuery();
@@ -262,7 +267,8 @@ public class Income {
 			while (rs.next()) {
 				Income i = new Income(accId, rs.getBigDecimal("amount").toString(), rs.getString("name"), 
 						rs.getDate("date_occur").toString(), rs.getString("description"), (Long) rs.getLong("scheduler"));
-				System.out.println("created:"+i.date_occur);
+				i.id = rs.getLong("id");
+//				System.out.println("created:"+i.date_occur);
 				incomes.add(i);
 			}
 		} catch (SQLException e) {
@@ -284,12 +290,14 @@ public class Income {
 				PreparedStatement ps = connection.prepareStatement("select sum(amount) as total from incomes i join incomes_tags it "
 						+ "on i.tag = it.id and it.owner = ? where it.name = ?");
 				ps.setLong(1, Long.parseLong(accId));
-				ps.setString(2, (tag));
+				ps.setString(2, tag);
 				ResultSet rs = ps.executeQuery();
 				BigDecimal amt = new BigDecimal("0.00");
 				String sum = "";
 				if (rs.next()) {
-					amt = amt.add(rs.getBigDecimal(1));
+					if (rs.getBigDecimal(1) != null) {
+						amt = rs.getBigDecimal(1);
+					}
 					sum = amt.toString();
 				}
 				tagSums.add(sum);
