@@ -1,5 +1,8 @@
 package controllers;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import models.Income;
 import models.ScheduledIncome;
 import play.data.DynamicForm;
@@ -37,7 +40,22 @@ public class Incomes extends Controller {
 	}
 	
 	public static Result incomes() {
-    	return ok(income.render(Income.getIncomes(session("connected_id"))));
+		List<String> tagNames = Income.getTags(session().get("connected_id"));	// get list of tag names
+		List<String> tagSums = Income.getTagSum(session().get("connected_id"));	// get sum of the income values by tag
+		
+		// return order: list of all incomes as Incomes object, string of tag names, string of the sum of income values by tag.
+    	return ok(incomes.render(Income.getIncomes(session("connected_id")), Income.listToString(tagNames), 
+    			Income.listToString(tagSums)));
+	}
+	
+	// TODO: this method
+	public static Result showEditIncome(long id) {
+		return ok();
+	}
+	
+	// TODO: this method
+	public static Result editIncome(long id) {
+		return ok();
 	}
 
 }

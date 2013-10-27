@@ -4,33 +4,7 @@
 
 @main("Budgyet") {
 	
-	<!-- Navbar -->
-	<nav class="navbar navbar-default navbarOverride" role="navigation">
-		<!-- Brand and toggle get grouped for better mobile display -->
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-			<a class="navbar-brand" href="@routes.Application.index()"><img src="@routes.Assets.at("images/logo.png")" height="16"></a>
-		</div>
-		
-		<!-- Collect the nav links, forms, and other content for toggling -->
-		<div class="collapse navbar-collapse navbar-ex1-collapse">
-			<ul class="nav navbar-nav">
-				<li><a href="@routes.Budgets.budgets()">Budgets</a></li>
-				<li><a href="@routes.Incomes.incomes()">Income</a></li>
-				<li><a href="@routes.Expenses.expenses()">Expenses</a></li>
-			</ul>
-			  
-			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#">@session.get("connected_username")</a></li>
-				<li><a href="@routes.Accounts.logout()">Logout</a></li>
-			</ul>
-		</div><!-- /.navbar-collapse -->
-	</nav>
+	@navBar("","","")
 	
 	@for(budget <- budgets) {
 		<h4><strong>@budget.getTitle()</strong></h4>
@@ -43,56 +17,45 @@
 
 	@form(action = routes.Expenses.addExpense(), 'id -> "expenseForm", 'class -> "form-horizontal", 'onSubmit -> "return checkExpenseSubmit(this)", 'role -> "form") {
 		
-		<div class="form-group">
-			<div class="col-lg-4">
-		  		<input type="text" name="expense_amount" value="1.00">
-	  		</div>
-		</div>
+		@formGroup {
+			<input type="text" name="expense_amount" value="1.00">
+		}
+		
+		@formGroup {
+			<input type="text" id="expense_tags" class="form-control" name="tags" placeholder="New Tags">
+		}
 
-		<div class="form-group">
-		  	<div class="col-lg-4">
-		      	<input type="text" id="expense_tags" class="form-control" name="tags" placeholder="New Tags">
-		  	</div>
-	  	</div>
+		@formGroup {
+			@for(tagName <- expenseTags) {
+  				<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('@tagName')">@tagName</button>
+  			}	
+		}
 	  	
-	  	<div class="form-group">
-	  		<div class="col-lg-4">
-	  			@for(tagName <- expenseTags) {
-  					<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('@tagName')">@tagName</button>
-  				}		
-			</div>
-		</div>		
+	  	@formGroup {
+	  		<div class="input-group date" id="expense_datepicker" data-date="2013-08-17" data-date-format="yyyy-mm-dd">
+	      		<span class="input-group-addon add-on">
+	        		<i class="glyphicon glyphicon-calendar"></i>
+	      		</span>
+	      		<input type="text" name="expense_date" class="form-control" size="16" value="2013-08-17" onclick="$('#expense_datepicker').datepicker('show')" readonly>
+      		</div>	
+  		}	
 
-		<div class="form-group">
-		  	<div class="col-lg-4">
-		  		<div class="input-group date" id="expense_datepicker" data-date="2013-08-17" data-date-format="yyyy-mm-dd">
-		      		<span class="input-group-addon add-on">
-		        		<i class="glyphicon glyphicon-calendar"></i>
-		      		</span>
-		      		<input type="text" name="expense_date" class="form-control" size="16" value="2013-08-17" onclick="$('#expense_datepicker').datepicker('show')" readonly>
-	      		</div>
-		  	</div>
-	  	</div>
+		@formGroup {
+	  		<textarea rows="2" name="expense_description" class="form-control" maxlength="256" placeholder="Description"></textarea>
+  		}
+
 	  	
-	  	<div class="form-group">
-		  	<div class="col-lg-4">
-		  		<textarea rows="2" name="expense_description" class="form-control" maxlength="256" placeholder="Description"></textarea>
-		  	</div>
-	  	</div>
-	  	
-	  	<div class="form-group">
-	  		<div class="col-lg-4">
-			  	<select name="expense_repeat" class="selectpicker show-tick show-menu-arrow">
-					<option value="0">Don't Repeat</option>
-					<optgroup label="Repeat">
-						<option value="1">Daily</option>
-						<option value="2">Weekly</option>
-						<option value="3">Fortnightly</option>
-						<option value="4">Monthly</option>
-					</optgroup>
-				</select>
-			</div>
-		</div>
+	  	@formGroup {
+	  		<select name="expense_repeat" class="selectpicker show-tick show-menu-arrow">
+				<option value="0">Don't Repeat</option>
+				<optgroup label="Repeat">
+					<option value="1">Daily</option>
+					<option value="2">Weekly</option>
+					<option value="3">Fortnightly</option>
+					<option value="4">Monthly</option>
+				</optgroup>
+			</select>
+		}
 	  	
 		<div class="form-group">
 			<input type="submit" class="btn btn-primary" name="submit" value="Log Expense">
@@ -101,56 +64,44 @@
 	
 	@form(action = routes.Incomes.addIncome(), 'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkIncomeSubmit(this)", 'role -> "form") {
 		
-		<div class="form-group">
-			<div class="col-lg-4">
-		  		<input type="text" name="income_amount" value="1.00">
-	  		</div>
-		</div>
+		@formGroup {
+	  		<input type="text" name="income_amount" value="1.00">
+		}
 
-		<div class="form-group">
-		  	<div class="col-lg-4">
-		      	<input type="text" id="income_tags" class="form-control" name="tags" placeholder="New Tags">
-		  	</div>
-	  	</div>
+		@formGroup {
+	      	<input type="text" id="income_tags" class="form-control" name="tags" placeholder="New Tags">
+	  	}
 	  	
-	  	<div class="form-group">
-	  		<div class="col-lg-4">
-		  		@for(tagName <- incomeTags) {
-  					<button type="button" class="btn btn-default btn-sm" onclick="addIncomeTag('@tagName')">@tagName</button>
-  				}			
-			</div>
-		</div>		
+	  	@formGroup {
+	  		@for(tagName <- incomeTags) {
+				<button type="button" class="btn btn-default btn-sm" onclick="addIncomeTag('@tagName')">@tagName</button>
+			}			
+		}		
 
-		<div class="form-group">
-		  	<div class="col-lg-4">
-		  		<div class="input-group date" id="income_datepicker" data-date="2013-08-17" data-date-format="yyyy-mm-dd">
-		      		<span class="input-group-addon add-on">
-		        		<i class="glyphicon glyphicon-calendar"></i>
-		      		</span>
-		      		<input type="text" name="income_date" class="form-control" size="16" value="2013-08-17" onclick="$('#income_datepicker').datepicker('show')" readonly>
-	      		</div>
-		  	</div>
-	  	</div>
+		@formGroup {
+	  		<div class="input-group date" id="income_datepicker" data-date="2013-08-17" data-date-format="yyyy-mm-dd">
+	      		<span class="input-group-addon add-on">
+	        		<i class="glyphicon glyphicon-calendar"></i>
+	      		</span>
+	      		<input type="text" name="income_date" class="form-control" size="16" value="2013-08-17" onclick="$('#income_datepicker').datepicker('show')" readonly>
+      		</div>
+	  	}
 
-	  	<div class="form-group">
-		  	<div class="col-lg-4">
-		  		<textarea rows="2" name="income_description" class="form-control" maxlength="256" placeholder="Description"></textarea>
-		  	</div>
-	  	</div>
+	  	@formGroup {
+	  		<textarea rows="2" name="income_description" class="form-control" maxlength="256" placeholder="Description"></textarea>
+	  	}
 	  	
-	  	<div class="form-group">
-	  		<div class="col-lg-4">
-			  	<select name="income_repeat" class="selectpicker show-tick show-menu-arrow">
-					<option value="0">Don't Repeat</option>
-					<optgroup label="Repeat">
-						<option value="1">Daily</option>
-						<option value="2">Weekly</option>
-						<option value="3">Fortnightly</option>
-						<option value="4">Monthly</option>
-					</optgroup>
-				</select>
-			</div>
-		</div>
+	  	@formGroup {
+		  	<select name="income_repeat" class="selectpicker show-tick show-menu-arrow">
+				<option value="0">Don't Repeat</option>
+				<optgroup label="Repeat">
+					<option value="1">Daily</option>
+					<option value="2">Weekly</option>
+					<option value="3">Fortnightly</option>
+					<option value="4">Monthly</option>
+				</optgroup>
+			</select>
+		}
 	  	
 		<div class="form-group">
 			<input type="submit" class="btn btn-primary" name="submit" value="Log Income">
@@ -159,73 +110,57 @@
     
     @form(action = routes.Budgets.addBudget(), 'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkBudgetSubmit(this)", 'role -> "form") {
 		
-		<div class="form-group">
-			<div class="col-lg-4">
-		  		<input type="text" id="budget_title" class="form-control" name="budget_title" placeholder="Title" maxlength="100">
-	  		</div>
-		</div>
+		@formGroup {
+	  		<input type="text" id="budget_title" class="form-control" name="budget_title" placeholder="Title" maxlength="100">
+  		}
 		
-		<div class="form-group">
-			<div class="col-lg-4">
-		  		<input type="text" name="budget_amount" value="1.00">
-	  		</div>
-		</div>
+		@formGroup {
+	  		<input type="text" name="budget_amount" value="1.00">
+  		}
 
-		<div class="form-group">
-		  	<div class="col-lg-4">
-		      	<input type="text" id="budget_tags" class="form-control" name="tags" placeholder="New Tags">
-		  	</div>
-	  	</div>
+		@formGroup {
+	      	<input type="text" id="budget_tags" class="form-control" name="tags" placeholder="New Tags">
+		  	}
 	  	
-	  	<div class="form-group">
-	  		<div class="col-lg-4">
-		  		@for(tagName <- expenseTags) {
-  					<button type="button" class="btn btn-default btn-sm" onclick="addBudgetTag('@tagName')">@tagName</button>
-  				}			
-			</div>
-		</div>		
+	  	@formGroup {
+	  		@for(tagName <- expenseTags) {
+				<button type="button" class="btn btn-default btn-sm" onclick="addBudgetTag('@tagName')">@tagName</button>
+			}			
+		}
+		
+		@formGroup {
+	  		<div class="input-group date" id="budget_start_datepicker" data-date="2013-8-16" data-date-format="yyyy-mm-dd">
+	      		<span class="input-group-addon add-on">
+	        		<i class="glyphicon glyphicon-calendar"></i>
+	      		</span>
+	      		<input type="text" name="budget_start_date" class="form-control" size="16" value="2013-8-16" onclick="$('#budget_start_datepicker').datepicker('show')" readonly>
+      		</div>
+	  	}
+	  	
+	  	@formGroup {
+	  		<div class="input-group date" id="budget_end_datepicker" data-date="2013-8-16" data-date-format="yyyy-mm-dd">
+	      		<span class="input-group-addon add-on">
+	        		<i class="glyphicon glyphicon-calendar"></i>
+	      		</span>
+	      		<input type="text" name="budget_end_date" class="form-control" size="16" value="2013-8-16" onclick="$('#budget_end_datepicker').datepicker('show')" readonly>
+      		</div>
+	  	}
 
-		<div class="form-group">
-		  	<div class="col-lg-4">
-		  		<div class="input-group date" id="budget_start_datepicker" data-date="2013-8-16" data-date-format="yyyy-mm-dd">
-		      		<span class="input-group-addon add-on">
-		        		<i class="glyphicon glyphicon-calendar"></i>
-		      		</span>
-		      		<input type="text" name="budget_start_date" class="form-control" size="16" value="2013-8-16" onclick="$('#budget_start_datepicker').datepicker('show')" readonly>
-	      		</div>
-		  	</div>
-	  	</div>
+	  	@formGroup {
+	  		<textarea rows="2" name="budget_description" class="form-control" maxlength="256" placeholder="Description"></textarea>
+	  	}
 	  	
-	  	<div class="form-group">
-		  	<div class="col-lg-4">
-		  		<div class="input-group date" id="budget_end_datepicker" data-date="2013-8-16" data-date-format="yyyy-mm-dd">
-		      		<span class="input-group-addon add-on">
-		        		<i class="glyphicon glyphicon-calendar"></i>
-		      		</span>
-		      		<input type="text" name="budget_end_date" class="form-control" size="16" value="2013-8-16" onclick="$('#budget_end_datepicker').datepicker('show')" readonly>
-	      		</div>
-		  	</div>
-	  	</div>
-
-	  	<div class="form-group">
-		  	<div class="col-lg-4">
-		  		<textarea rows="2" name="budget_description" class="form-control" maxlength="256" placeholder="Description"></textarea>
-		  	</div>
-	  	</div>
-	  	
-	  	<div class="form-group">
-	  		<div class="col-lg-4">
-			  	<select name="budget_repeat" class="selectpicker show-tick show-menu-arrow">
-					<option value="0">Don't Repeat</option>
-					<optgroup label="Repeat">
-						<option value="1">Daily</option>
-						<option value="2">Weekly</option>
-						<option value="3">Fortnightly</option>
-						<option value="4">Monthly</option>
-					</optgroup>
-				</select>
-			</div>
-		</div>
+	  	@formGroup {
+		  	<select name="budget_repeat" class="selectpicker show-tick show-menu-arrow">
+				<option value="0">Don't Repeat</option>
+				<optgroup label="Repeat">
+					<option value="1">Daily</option>
+					<option value="2">Weekly</option>
+					<option value="3">Fortnightly</option>
+					<option value="4">Monthly</option>
+				</optgroup>
+			</select>
+		}
 	  	
 		<div class="form-group">
 			<input type="submit" class="btn btn-primary" name="submit" value="Create Budget">

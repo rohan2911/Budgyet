@@ -21,6 +21,7 @@ public class Expense {
 	public BigDecimal amount;
 	public String tagName;
 	public Date date_occur;
+	public String date_display;
 	public String description;
 	public Long scheduler;
 	
@@ -37,6 +38,7 @@ public class Expense {
 		this.owner = Long.parseLong(owner);
 		this.amount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
 		this.tagName = tag;
+		this.date_display = date_occur;
 		try {
 			// simpledateformat is a JAVA date. 
 			this.date_occur = new SimpleDateFormat("yyyy-MM-dd").parse(date_occur);
@@ -60,6 +62,7 @@ public class Expense {
 		this.owner = Long.parseLong(owner);
 		this.amount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
 		this.tagName = tag;
+		this.date_display = date;
 		try {
 			// simpledateformat is a JAVA date. 
 			this.date_occur = new SimpleDateFormat("yyyy-MM-dd").parse(date);
@@ -142,6 +145,41 @@ public class Expense {
 		return true;
 	}
 	
+
+	/**
+	 * Get all the expenses belonging to specified user
+	 * @param accId id number of the account from db
+	 * @return list of Expenses owned by the specified user.
+	 */
+	public static List<Expense> getExpenses(String accId) {
+		List<Expense> expenses = new ArrayList<Expense>();
+		// select all expenses by user
+		Connection connection = DB.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			ps = connection.prepareStatement("select i.amount, i.description, i.date_occur, i.scheduler, it.name from expenses i"
+					+ "	join expenses_tags it on i.tag = it.id where i.owner = ? order by i.date_occur desc;");
+			ps.setLong(1, Long.parseLong(accId));
+			rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				Expense i = new Expense(accId, rs.getBigDecimal("amount").toString(), rs.getString("name"), rs.getDate("date_occur").toString(), rs.getString("description"), (Long) rs.getLong("scheduler"));
+				expenses.add(i);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return expenses;
+	}
+	
+	/**
+	 * Gets the list of the owner's current income tags. 
+	 * Used for displaying the tags on home page.
+	 * @param accId user account's id
+	 * @return list of all the tag names that the user owns
+	 */
 	public static List<String> getTags(String accId) {
 		List<String> tagList = new ArrayList<String>();
 		
@@ -178,6 +216,52 @@ public class Expense {
 			}
 		}
 		return tagList;
+	}
+	
+	/**
+	 * @param accId user account id as stored in the db. 
+	 * @return the list of summed values of the tag names(owned by the user) found by getTags().
+	 */
+	public static List<String> getTagSum(String accId) {
+		List<String> tagSums = new ArrayList<String>();
+		List<String> tagNameList = getTags(accId);
+		Connection connection = DB.getConnection();
+		for (String tag: tagNameList) {
+			try {
+				PreparedStatement ps = connection.prepareStatement("select sum(amount) as total from expenses i join expenses_tags it "
+						+ "on i.tag = it.id and it.owner = ? where it.name = ?");
+				ps.setLong(1, Long.parseLong(accId));
+				ps.setString(2, (tag));
+				ResultSet rs = ps.executeQuery();
+				BigDecimal amt = new BigDecimal("0.00");
+				String sum = "";
+				if (rs.next()) {
+					amt = amt.add(rs.getBigDecimal(1));
+					sum = amt.toString();
+				}
+				tagSums.add(sum);
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return tagSums;
+	}
+	
+	
+	/**
+	 * Given a list, turns the content into a string, with elements separated
+	 * by commas.
+	 * @param taglist
+	 * @return the string containing the elements, separated by commas
+	 */
+	public static String listToString(List<String> taglist) {
+		String tags = "";
+		for (String t: taglist) {
+			tags += t+",";
+		}
+		tags = tags.substring(0, tags.length()-1);
+		return tags;
 	}
 	
 }
