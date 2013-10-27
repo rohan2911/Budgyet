@@ -22,6 +22,7 @@ public class Income {
 //	public List<String> tags;
 	public String tagName;	// max. 1 tag per income 
 	public Date date_occur;
+	public String date_display;
 	public String description;
 	public Long scheduler;
 	
@@ -29,7 +30,7 @@ public class Income {
 	 * Contructor for Income class.
 	 * @param owner id of the owner of this income. (the current logged in user's id is passed in)
 	 * @param amount the amount of income
-	 * @param tagName the tag associated with this income. (only 1 allowed)
+	 * @param tagName the user specified tag name associated with this income. (only 1 allowed)
 	 * @param date_occur user specified date of the income
 	 * @param description income description
 	 * @param scheduler id of the scheduler used for repeating incomes
@@ -39,6 +40,7 @@ public class Income {
 		this.amount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
 //		this.tags = new ArrayList<String>(Arrays.asList(tags.split(",")));
 		this.tagName = tagName;
+		this.date_display = date_occur;
 		try {
 			this.date_occur = new SimpleDateFormat("yyyy-MM-dd").parse(date_occur);
 		} catch (ParseException e) {
@@ -61,6 +63,7 @@ public class Income {
 		this.owner = Long.parseLong(owner);
 		this.amount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
 		this.tagName = tagName;
+		this.date_display = date;
 		try {
 			this.date_occur = new SimpleDateFormat("yyyy-MM-dd").parse(date);
 		} catch (ParseException e) {
@@ -271,18 +274,11 @@ public class Income {
 	/**
 	 * Get all the incomes belonging to specified user
 	 * @param accId id number of the account from db
-	 * @return
+	 * @return list of Incomes owned by the specified user.
 	 */
 	public static List<Income> getIncomes(String accId) {
 		List<Income> incomes = new ArrayList<Income>();
 		// select all incomes by user
-		/* select i.amount, i.desc, i.date_occur, it.name from income i 
-		 *	 join incomes_tags_map im on i.id = im.income
-		 *	 join incomes_tags it on im.tag = it.id  
-		 *where i.owner = userId
-		 * 
-		 */ 
-		
 		Connection connection = DB.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -294,32 +290,54 @@ public class Income {
 			rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				Income i = new Income(accId, rs.getBigDecimal("amount").toString(), rs.getString("name"), rs.getDate("date_occur").toString(), rs.getString("description"), (Long) rs.getLong("scheduler"));
+				Income i = new Income(accId, rs.getBigDecimal("amount").toString(), rs.getString("name"), 
+						rs.getDate("date_occur").toString(), rs.getString("description"), (Long) rs.getLong("scheduler"));
+				System.out.println("created:"+i.date_occur);
 				incomes.add(i);
 			}
-			
-			// go through the list and sum up the incomes for each tag name
-			// get list containing distinct tag names
-			List<String> tagList = new ArrayList<String>();
-			/*for (Income i: incomes) {
-				if (!tagList.contains(i.tagName)) {
-					tagList.add(i.tagName);
-				}
-			}*/
-			
-			// query sql to sum the income amount for us
-			
-			// TODO: this method should just return the list of incomes..
-			// and a different method will take in that list and calculate the rest of the stuff.
-			
-			
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return incomes;
 	}
-		
+	
+	/**
+	 * @param accId user account id as stored in the db. 
+	 * @return the list of summed values of the tag names(owned by the user) found by getTags().
+	 */
+	public static List<String> getTagSum(String accId) {
+		List<String> tagSums = new ArrayList<String>();
+		List<String> tagNameList = getTags(accId);
+		Connection connection = DB.getConnection();
+		for (String tag: tagNameList) {
+			try {
+				PreparedStatement ps = connection.prepareStatement("select sum(amount) as total from incomes i join incomes_tags it "
+						+ "on i.tag = it.id and it.owner = ? where it.name = ?");
+				ps.setLong(1, Long.parseLong(accId));
+				ps.setString(2, (tag));
+				ResultSet rs = ps.executeQuery();
+				BigDecimal amt = new BigDecimal("0.00");
+				String sum = "";
+				if (rs.next()) {
+					amt = amt.add(rs.getBigDecimal(1));
+					sum = amt.toString();
+				}
+				tagSums.add(sum);
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return tagSums;
+	}
+	
+	
+	/**
+	 * Gets the list of the owner's current income tags. 
+	 * Used for displaying the tags on home page.
+	 * @param accId user account's id
+	 * @return list of all the tag names that the user owns
+	 */
 	public static List<String> getTags(String accId) {
 		List<String> tagList = new ArrayList<String>();
 		
@@ -351,10 +369,25 @@ public class Income {
 					connection.close();
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		return tagList;
+	}
+	
+	
+	/**
+	 * Given a list, turns the content into a string, with elements separated
+	 * by commas.
+	 * @param taglist
+	 * @return the string containing the elements, separated by commas
+	 */
+	public static String listToString(List<String> taglist) {
+		String tags = "";
+		for (String t: taglist) {
+			tags += t+",";
+		}
+		tags = tags.substring(0, tags.length()-1);
+		return tags;
 	}
 }

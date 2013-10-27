@@ -1,97 +1,134 @@
-@()
+@(expenses: List[Expense], tagnames: String, tagamounts: String)
 
 @import helper._
  
 @main("Expenses | Budgyet") {
-
-   	<!-- Navbar -->
-	<nav class="navbar navbar-default navbarOverride" role="navigation">
-		<!-- Brand and toggle get grouped for better mobile display -->
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-			<a class="navbar-brand" href="@routes.Application.index()"><img src="@routes.Assets.at("images/logo.png")" height="16"></a>
+        
+   	@navBar("", "", "active")
+        
+		<!-- Centred content -->
+	<div class="centredContent">
+		<div class="page-header">
+			<p class="alignLeft"><h1>Expense Overview
+				<p class="alignRight">
+				<a data-toggle="modal" href="#createBudgetModal" class="btn btn-primary btn-lg button1"><span class="glyphicon glyphicon-plus"></span></a>
+			</p>
+			</h1></p>
 		</div>
-		
-		<!-- Collect the nav links, forms, and other content for toggling -->
-		<div class="collapse navbar-collapse navbar-ex1-collapse">
-			<ul class="nav navbar-nav">
-				<li><a href="@routes.Budgets.budgets()">Budgets</a></li>
-				<li><a href="@routes.Incomes.incomes()">Income</a></li>
-				<li class="active"><a href="@routes.Expenses.expenses()">Expenses</a></li>
-			</ul>
-			  
-			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#">@session.get("connected_username")</a></li>
-				<li><a href="@routes.Accounts.logout()">Logout</a></li>
-			</ul>
-		</div><!-- /.navbar-collapse -->
-	</nav>
+            
+	<!-- Filters -->
+	<form class="form-inline" role="form">
+	    <div class="form-group">Filter by: </div>
+	    
+	    <div class="form-group">
+	        <select class="form-control roundedBorder">
+				<option value="" selected disabled>Period</option>
+				<option>Current week</option>
+				<option>Current month</option>
+				<option>Last 31 days</option>
+				<option>Last 60 days</option>
+				<option>Last 90 Days</option>
+				<option>All</option>
+	        </select>
+	    </div>
+	    
+	    <div class="form-group">
+	        <select class="form-control roundedBorder">
+				<option value="" selected disabled>Category</option>
+				<option>Salary</option>
+				<option>Awards</option>
+				<option>Selling</option>
+				<option>All</option>
+	        </select>
+	    </div>
+	</form>
         
-        <!-- Centred content -->
-        <div class="centredContent">
-            <div class="page-header">
-                <p class="alignLeft"><h1>Expenses Overview</h1></p>
-                <p class="alignRight">
-                    <a data-toggle="modal" href="#createBudgetModal" class="btn btn-primary btn-lg button1"><span class="glyphicon glyphicon-plus"></span></a>
-                </p>
-            </div>
-        
-            <!-- Graph -->
-            <div id="expensesGraph" style="min-width: 310px; height: 400px; margin-top:50px auto">
-                <script>
-                    $(function () {
-                        $('#expensesGraph').highcharts({
-                            chart: {
-                                plotBackgroundColor: '#e9f8e8',
-                                plotBorderWidth: null,
-                                plotShadow: false
-                            },
-                            title: {
-                                text: 'Expenses for this budget'
-                            },
-                            tooltip: {
-                                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                            },
-                            plotOptions: {
-                                pie: {
-                                    allowPointSelect: true,
-                                    cursor: 'pointer',
-                                    dataLabels: {
-                                        enabled: true,
-                                        color: '#000000',
-                                        connectorColor: '#000000',
-                                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                                    }
-                                }
-                            },
-                            series: [{
-                                type: 'pie',
-                                name: 'Expenses share',
-                                data: [
-                                    ['House',   45.0],
-                                    ['Food',       26.8],
-                                    {
-                                        name: 'Steam',
-                                        y: 12.8,
-                                        sliced: true,
-                                        selected: true
-                                    },
-                                    ['Clothes',    8.5],
-                                    ['Games',     6.2],
-                                    ['Others',   0.7]
-                                ]
-                            }]
-                        });
-                    });
-
-                    
-                </script>
-            </div>
-        </div>
+	<br>
+	
+   	<!-- Graph -->
+    <div class="pieGraph" title="Expense Overview" tags="@tagnames" tagValues="@tagamounts"></div>
     
+    <br>
+    
+	<div class="panel panel-success">
+	    <div class="panel-heading">
+	        <h3 class="panel-title">Expense Items</h3>
+	    </div>
+	    <table class="table">
+	        <tr>
+	            <td><b>Date</b></td>
+	            <td></td>
+	            <td><b>Item</b></td>
+	            <td><b>Category</b></td>
+	            <td><b>Amount</b></td>
+	        </tr>
+	    	@for(exp <- expenses) {
+	        <tr>
+	            <td>@exp.date_display</td>
+   	            <td>
+	            	@if(exp.scheduler > 0) {
+	            		<span class="glyphicon glyphicon-repeat"></span>
+            		}
+            	</td>
+	            <td>@exp.description</td>
+	            <td>@exp.tagName</td>
+	            <td>@exp.amount</td>
+	        </tr>
+	        }
+	    </table>
+	</div>
+    <script>
+            
+        $(document).ready(function() {
+            $('.pieGraph').each(function() {
+                var options = {
+                    chart: {
+                        plotBackgroundColor: '#e9f8e8',
+                        plotBorderWidth: null,
+                        plotShadow: false
+                    },
+                    title: {
+                        text: $(this).attr('title')
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: <b>${point.y:.2f}<br>{point.percentage:.1f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                color: '#000000',
+                                connectorColor: '#000000',
+                                format: '<b>{point.name}</b>:${point.y:.2f}<br>{point.percentage:.1f}%'
+                            }
+                        }
+                    },
+                    series: [{
+                        type: 'pie',
+                        name: 'Proportion',
+                        data: []
+                    }]
+                };
+                
+                var tagArray = $(this).attr('tags').split(',');
+                var tagValues = $(this).attr('tagValues').split(',');
+                
+                for(var i=0; i<tagArray.length; i++){
+                   options.series[0].data.push({name: tagArray[i], y: parseFloat(tagValues[i])});
+                }
+                
+                $(this).highcharts(options);
+
+            });
+        });
+            
+    </script>
+        
 }
+
+
+
+
+

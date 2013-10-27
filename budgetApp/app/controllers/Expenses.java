@@ -1,6 +1,9 @@
 package controllers;
 
+import java.util.List;
+
 import models.Expense;
+import models.Income;
 import models.ScheduledExpense;
 import play.data.DynamicForm;
 import play.mvc.Controller;
@@ -39,7 +42,20 @@ public class Expenses extends Controller {
 	}
 	
 	public static Result expenses() {
-    	return ok(expenses.render());
+		List<String> tagNames = Expense.getTags(session().get("connected_id"));	// get list of tag names
+		List<String> tagSums = Expense.getTagSum(session().get("connected_id"));	// get sum of the income values by tag
+    	return ok(expenses.render(Expense.getExpenses(session("connected_id")), Expense.listToString(tagNames), 
+    			Expense.listToString(tagSums)));
+	}
+	
+	// TODO: this method
+	public static Result showEditExpense(long id) {
+		return ok();
+	}
+	
+	// TODO: this method
+	public static Result editExpense(long id) {
+		return ok();
 	}
 	
 }
