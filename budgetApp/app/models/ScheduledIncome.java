@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import play.db.DB;
 
@@ -27,7 +28,6 @@ public class ScheduledIncome {
 	public long owner;
 	public BigDecimal income_amount;
 	public String income_description;
-//	public List<String> tags;
 	public String tagName;
 	
 	/**
@@ -334,5 +334,72 @@ public class ScheduledIncome {
 		}
 		
 		return true;
+	}
+	
+
+	/**
+	 *
+	 * Gets the scheduler for a given income
+	 * 
+	 * @param the id of the income
+	 * @return a Scheduled income populated with values from the database
+	 */
+	public static ScheduledIncome get(long incomeId) {
+		ScheduledIncome returnScheduler = null; 
+		Connection connection = DB.getConnection();
+		
+		PreparedStatement psIncomeSelect = null;
+		PreparedStatement psSchedulerSelect = null;
+		ResultSet rsIncome = null;
+		ResultSet rsScheduler = null;
+		
+		try {
+			// select the scheduler field of the record for the income id
+			psIncomeSelect = connection.prepareStatement("SELECT scheduler FROM incomes WHERE id = ?");
+			psIncomeSelect.setLong(1, incomeId);
+			rsIncome = psIncomeSelect.executeQuery();
+			
+			long schedulerId = rsIncome.getLong(1);
+			
+			// select the schedueler object
+			psSchedulerSelect = connection.prepareStatement("SELECT * FROM scheduled_incomes WHERE id = ?");
+			psSchedulerSelect.setLong(1, schedulerId);
+			rsScheduler = psSchedulerSelect.executeQuery();
+			
+			// set return value
+			returnScheduler = new ScheduledIncome(rsScheduler.getString("date_next"), rsScheduler.getString("period"),
+					rsScheduler.getString("owner"), rsScheduler.getString("income_amount"),
+					rsScheduler.getString("income_description"), rsScheduler.getString("tag"));
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rsIncome != null) {
+					rsIncome.close();
+				}
+				
+				if (rsScheduler != null) {
+					rsScheduler.close();
+				}
+				
+				if (psIncomeSelect != null) {
+					psIncomeSelect.close();
+				}
+				
+				if (psSchedulerSelect != null) {
+					psSchedulerSelect.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+		}
+		
+		return returnScheduler;
 	}
 }

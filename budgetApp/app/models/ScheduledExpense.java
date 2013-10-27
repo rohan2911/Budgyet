@@ -32,7 +32,6 @@ public class ScheduledExpense {
 	public long owner;
 	public BigDecimal expense_amount;
 	public String expense_description;
-//	public List<String> tags;
 	public String tagName;
 	
 	/**
@@ -336,5 +335,71 @@ public class ScheduledExpense {
 		}
 		
 		return true;
+	}
+	
+	/**
+	 *
+	 * Gets the scheduler for a given expense
+	 * 
+	 * @param the id of the expense
+	 * @return a Scheduled expense populated with values from the database
+	 */
+	public static ScheduledExpense get(long expenseId) {
+		ScheduledExpense returnScheduler = null; 
+		Connection connection = DB.getConnection();
+		
+		PreparedStatement psExpenseSelect = null;
+		PreparedStatement psSchedulerSelect = null;
+		ResultSet rsExpense = null;
+		ResultSet rsScheduler = null;
+		
+		try {
+			// select the scheduler field of the record for the expense id
+			psExpenseSelect = connection.prepareStatement("SELECT scheduler FROM expenses WHERE id = ?");
+			psExpenseSelect.setLong(1, expenseId);
+			rsExpense = psExpenseSelect.executeQuery();
+			
+			long schedulerId = rsExpense.getLong(1);
+			
+			// select the schedueler object
+			psSchedulerSelect = connection.prepareStatement("SELECT * FROM scheduled_expenses WHERE id = ?");
+			psSchedulerSelect.setLong(1, schedulerId);
+			rsScheduler = psSchedulerSelect.executeQuery();
+			
+			// set return value
+			returnScheduler = new ScheduledExpense(rsScheduler.getString("date_next"), rsScheduler.getString("period"),
+					rsScheduler.getString("owner"), rsScheduler.getString("expense_amount"),
+					rsScheduler.getString("expense_description"), rsScheduler.getString("tag"));
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rsExpense != null) {
+					rsExpense.close();
+				}
+				
+				if (rsScheduler != null) {
+					rsScheduler.close();
+				}
+				
+				if (psExpenseSelect != null) {
+					psExpenseSelect.close();
+				}
+				
+				if (psSchedulerSelect != null) {
+					psSchedulerSelect.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+		}
+		
+		return returnScheduler;
 	}
 }

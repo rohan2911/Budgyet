@@ -142,6 +142,92 @@ public class Expense {
 		return true;
 	}
 	
+	/**
+	 * 
+	 * updates the database record with the id
+	 * using the values from the expense object
+	 * 
+	 * @param expenseId - Id of the expense in the database
+	 * @return success
+	 */
+	public boolean update(long expenseId) {
+		boolean success =  true;
+		
+		Connection connection = DB.getConnection();
+		
+		PreparedStatement psSelectTags = null;
+		PreparedStatement psInsertTags = null;
+		PreparedStatement psUpdateExpense = null;
+		
+		ResultSet rsSelectTags = null;
+		ResultSet rsTagKey = null;
+		
+		try {
+			// insert any new tag if it does not exist
+			psSelectTags = connection.prepareStatement("SELECT * FROM expenses_tags WHERE name = ?");
+			psSelectTags.setString(1, this.tagName);
+			rsSelectTags = psSelectTags.executeQuery();
+			
+			long tagId = 0;
+			
+			// if the tag does not exist create it
+			if (rsSelectTags.next()) {
+				// get existing tag
+				tagId = rsSelectTags.getLong(1);
+			} else {
+				// create a n
+				psInsertTags = connection.prepareStatement("INSERT INTO expenses_tags (owner, name) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+				psInsertTags.setLong(1, this.owner);
+				psInsertTags.setString(2, this.tagName);
+				psInsertTags.executeUpdate();
+				rsTagKey = psInsertTags.getGeneratedKeys();
+				tagId = rsTagKey.getLong(1);
+			}
+			
+			// update the expense database record
+			psUpdateExpense = connection.prepareStatement("UPDATE expenses SET amount = ?, description = ?, date_occur = ?, tag = ? WHERE id = ?");
+			psUpdateExpense.setBigDecimal(1, this.amount);
+			psUpdateExpense.setString(2, this.description);
+			psUpdateExpense.setDate(3, new java.sql.Date(this.date_occur.getTime()));
+			psUpdateExpense.setLong(4, tagId);
+			psUpdateExpense.setLong(5, tagId);
+			psUpdateExpense.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			success = false;
+		} finally {
+			try {
+				if (psSelectTags != null) {
+					psSelectTags.close();
+				}
+				
+				if (psInsertTags != null) {
+					psInsertTags.close();
+				}
+				
+				if (psUpdateExpense != null) {
+					psUpdateExpense.close();
+				}
+				
+				if (rsSelectTags != null) {
+					rsSelectTags.close();
+				}
+				
+				if (rsTagKey != null) {
+					rsTagKey.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return success;
+	}
+	
 	public static List<String> getTags(String accId) {
 		List<String> tagList = new ArrayList<String>();
 		

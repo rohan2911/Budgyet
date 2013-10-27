@@ -151,6 +151,122 @@ public class Income {
 		
 		return true;
 	}
+	
+	/**
+	 * 
+	 * gets the id of a record from the database with details matching the income object
+	 * returns 
+	 * 
+	 * @return long id or -2 if no record found
+	 */
+	public long getId() {
+		long incomeId = -2;
+		
+		Connection connection = DB.getConnection();
+		
+		PreparedStatement psSelectIncome = null;
+		
+		ResultSet rsSelectIncome = null;
+		
+		try {
+			psSelectIncome = connection.prepareStatement("SELECT * FROM income WHERE owner = ? AND scheduler = ? " +
+											"AND amount = ? AND description = ? AND date_occur = ? AND tag = ?");
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			
+		}
+		
+		return incomeId;
+	}
+	
+	/**
+	 * 
+	 * updates the database record with the id
+	 * using the values from the income object
+	 * 
+	 * @param incomeId - Id of the income in the database
+	 * @return success
+	 */
+	public boolean update(long incomeId) {
+		boolean success =  true;
+		
+		Connection connection = DB.getConnection();
+		
+		PreparedStatement psSelectTags = null;
+		PreparedStatement psInsertTags = null;
+		PreparedStatement psUpdateIncome = null;
+		
+		ResultSet rsSelectTags = null;
+		ResultSet rsTagKey = null;
+		
+		try {
+			// insert any new tag if it does not exist
+			psSelectTags = connection.prepareStatement("SELECT * FROM incomes_tags WHERE name = ?");
+			psSelectTags.setString(1, this.tagName);
+			rsSelectTags = psSelectTags.executeQuery();
+			
+			long tagId = 0;
+			
+			// if the tag does not exist create it
+			if (rsSelectTags.next()) {
+				// get existing tag
+				tagId = rsSelectTags.getLong(1);
+			} else {
+				// create a n
+				psInsertTags = connection.prepareStatement("INSERT INTO incomes_tags (owner, name) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+				psInsertTags.setLong(1, this.owner);
+				psInsertTags.setString(2, this.tagName);
+				psInsertTags.executeUpdate();
+				rsTagKey = psInsertTags.getGeneratedKeys();
+				tagId = rsTagKey.getLong(1);
+			}
+			
+			// update the income database record
+			psUpdateIncome = connection.prepareStatement("UPDATE incomes SET amount = ?, description = ?, date_occur = ?, tag = ? WHERE id = ?");
+			psUpdateIncome.setBigDecimal(1, this.amount);
+			psUpdateIncome.setString(2, this.description);
+			psUpdateIncome.setDate(3, new java.sql.Date(this.date_occur.getTime()));
+			psUpdateIncome.setLong(4, tagId);
+			psUpdateIncome.setLong(5, tagId);
+			psUpdateIncome.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			success = false;
+		} finally {
+			try {
+				if (psSelectTags != null) {
+					psSelectTags.close();
+				}
+				
+				if (psInsertTags != null) {
+					psInsertTags.close();
+				}
+				
+				if (psUpdateIncome != null) {
+					psUpdateIncome.close();
+				}
+				
+				if (rsSelectTags != null) {
+					rsSelectTags.close();
+				}
+				
+				if (rsTagKey != null) {
+					rsTagKey.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return success;
+	}
 
 	/**
 	 * Get all the incomes belonging to specified user
