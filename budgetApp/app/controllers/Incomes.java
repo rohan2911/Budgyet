@@ -52,6 +52,8 @@ public class Incomes extends Controller {
 	
 	// TODO: this method
 	public static Result showEditIncome(long id) {
+		Income thisIncome = Income.get(id);
+    	
 		return ok();
 	}
 	

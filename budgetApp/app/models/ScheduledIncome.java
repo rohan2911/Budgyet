@@ -336,6 +336,95 @@ public class ScheduledIncome {
 		return true;
 	}
 	
+	/**
+	 * 
+	 * Updates a scheduled income and, income instances created by that scheduled income
+	 * 
+	 * Income instances are updated if they were created after the date in the schedueled income
+	 * object.
+	 * 
+	 * @param scheduledIncomeId
+	 * @return
+	 */
+	public boolean update(long scheduledIncomeId) {
+		boolean success = true;
+		Connection connection =  DB.getConnection();
+		
+		PreparedStatement psGetScheduledIncome = null;
+		PreparedStatement psGetAssociatedIncomes = null;
+		PreparedStatement psRemoveIncomes = null;
+		PreparedStatement psGetTag = null;
+		PreparedStatement psCreateTag = null;
+		PreparedStatement psUpdateScheduled = null;
+		
+		ResultSet rsGetScheduledIncome = null;
+		ResultSet rsGetAssociatedIncomes = null;
+		ResultSet rsGetTag = null;
+		ResultSet rsTagKey = null;
+		
+		try {
+			// get the scheduled income record
+			psGetScheduledIncome = connection.prepareStatement("SELECT * FROM scheduled_incomes WHERE id = ?");
+			psGetScheduledIncome.setLong(1, scheduledIncomeId);
+			rsGetScheduledIncome = psGetScheduledIncome.executeQuery();
+			
+			// get a list of incomes created after the date specified in ScheduledIncome
+			psGetAssociatedIncomes = connection.prepareStatement("SELECT * FROM incomes WHERE scheduled = ? AND date_next > ?");
+			psGetAssociatedIncomes.setLong(1, rsGetScheduledIncome.getLong("id"));
+			psGetAssociatedIncomes.setDate(2, new java.sql.Date(this.date_next.getTime()));
+			rsGetAssociatedIncomes = psGetAssociatedIncomes.executeQuery();
+			
+			// remove incomes after date so we can recreate them with init()
+			while (rsGetAssociatedIncomes.next()) {
+				psRemoveIncomes = connection.prepareStatement("DELETE FROM incomes WHERE id = ?");
+				psRemoveIncomes.setLong(1, rsGetAssociatedIncomes.getLong("id"));
+				psRemoveIncomes.executeUpdate();
+			}
+			
+			// cehck if the tag exists and get id (or create the tag)
+			psGetTag = connection.prepareStatement("SELECT * FROM incomes_tags WHERE name = ? and owner = ?");
+			psGetTag.setString(1, this.tagName);
+			psGetTag.setLong(2, this.owner);
+			rsGetTag = psGetTag.executeQuery();
+			
+			long tagId = 0;
+			
+			if (rsGetTag.next()) {
+				tagId = rsGetTag.getLong("id");
+			} else {
+				psCreateTag = connection.prepareStatement("INSERT INTO incomes_tags VALUES name = ?, owner = ?");
+				psCreateTag.setString(1, this.tagName);
+				psCreateTag.setLong(2, this.owner);
+				psCreateTag.executeUpdate();
+				rsTagKey = psCreateTag.getGeneratedKeys();
+				tagId = rsTagKey.getLong(1);
+			}
+			
+			psUpdateScheduled = connection.prepareStatement("UPDATE scheduled_incomes SET date_next = ?, period = ?, "
+					+ "owner = ?, income_amount = ?, income_description = ?, tag = ? WHERE id = ?");
+			psUpdateScheduled.setDate(1, new java.sql.Date(this.date_next.getTime()));
+			psUpdateScheduled.setInt(2, this.period);
+			psUpdateScheduled.setLong(3, this.owner);
+			psUpdateScheduled.setBigDecimal(4, this.income_amount);
+			psUpdateScheduled.setString(5, this.income_description);
+			psUpdateScheduled.setLong(6, tagId);
+			
+			psUpdateScheduled.setLong(7, scheduledIncomeId);
+			
+			psUpdateScheduled.executeUpdate();
+			
+			// recreate the income instances with the new income details
+			ScheduledIncome.init(scheduledIncomeId);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			success = false;
+		} finally {
+			
+		}
+		
+		return success;
+	}
 
 	/**
 	 *

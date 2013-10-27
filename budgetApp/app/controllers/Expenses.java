@@ -50,6 +50,14 @@ public class Expenses extends Controller {
 	
 	// TODO: this method
 	public static Result showEditExpense(long id) {
+		DynamicForm form = DynamicForm.form().bindFromRequest();	// throws form params into this object
+    	String amount = form.get("expense_amount");
+    	String tags = form.get("expense_tag_list");
+    	String date = form.get("expense_date");
+    	String description = form.get("expense_description");
+		
+    	String repeat = form.get("expense_repeat");
+		
 		return ok();
 	}
 	

@@ -16,7 +16,7 @@ import java.util.List;
 import play.db.DB;
 
 public class Income {
-
+	
 	public long owner;
 	public BigDecimal amount;
 //	public List<String> tags;
@@ -153,36 +153,6 @@ public class Income {
 		}
 		
 		return true;
-	}
-	
-	/**
-	 * 
-	 * gets the id of a record from the database with details matching the income object
-	 * returns 
-	 * 
-	 * @return long id or -2 if no record found
-	 */
-	public long getId() {
-		long incomeId = -2;
-		
-		Connection connection = DB.getConnection();
-		
-		PreparedStatement psSelectIncome = null;
-		
-		ResultSet rsSelectIncome = null;
-		
-		try {
-			psSelectIncome = connection.prepareStatement("SELECT * FROM income WHERE owner = ? AND scheduler = ? " +
-											"AND amount = ? AND description = ? AND date_occur = ? AND tag = ?");
-			
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			
-		}
-		
-		return incomeId;
 	}
 	
 	/**
@@ -389,5 +359,76 @@ public class Income {
 		}
 		tags = tags.substring(0, tags.length()-1);
 		return tags;
+	}
+	
+	/**
+	 * 
+	 * Get the income with id incomeId from the database 
+	 * 
+	 * @param incomeId - the id of the income you wish to get
+	 * @return Income populated with the income record
+	 */
+	public static Income get(long incomeId) {
+		Income returnIncome = null;
+		
+		Connection connection = DB.getConnection();
+		
+		PreparedStatement psIncomeSelect = null;
+		PreparedStatement psTagSelect = null;
+		
+		ResultSet rsIncomeSelect = null;
+		ResultSet rsTagSelect = null;
+		
+		try {
+			// select the income record
+			psIncomeSelect = connection.prepareStatement("SELECT * FROM incomes WHERE id = ?");
+			psIncomeSelect.setLong(1, incomeId);
+			rsIncomeSelect = psIncomeSelect.executeQuery();
+			
+			// select the tag the income is attatched to
+			psTagSelect = connection.prepareStatement("SELECT * FROM incomes_tags WHERE id = ?");
+			psTagSelect.setLong(1, rsIncomeSelect.getLong("tag"));
+			rsTagSelect = psTagSelect.executeQuery();
+			
+			// choose the constructor based on if the income is tied to a scheduler 
+			rsIncomeSelect.getLong("scheduler");
+			if (rsIncomeSelect.wasNull()) {
+				returnIncome = new Income(rsIncomeSelect.getString("owner"), rsIncomeSelect.getString("amount"),
+						rsTagSelect.getString("name"), rsIncomeSelect.getString("date_occur"),
+						rsIncomeSelect.getString("description"));				
+			} else {
+				returnIncome = new Income(rsIncomeSelect.getString("owner"), rsIncomeSelect.getString("amount"),
+						rsTagSelect.getString("name"), rsIncomeSelect.getString("date_occur"),
+						rsIncomeSelect.getString("description"), rsIncomeSelect.getLong("scheduler"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rsIncomeSelect != null) {
+					rsIncomeSelect.close();
+				}
+				
+				if (rsTagSelect != null) {
+					rsTagSelect.close();
+				}
+				
+				if (psIncomeSelect != null) {
+					psIncomeSelect.close();
+				}
+				
+				if (psTagSelect != null) {
+					psTagSelect.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return returnIncome;
 	}
 }

@@ -261,7 +261,7 @@ public class Expense {
 	}
 	
 	/**
-	 * Gets the list of the owner's current income tags. 
+	 * Gets the list of the owner's current expense tags. 
 	 * Used for displaying the tags on home page.
 	 * @param accId user account's id
 	 * @return list of all the tag names that the user owns
@@ -348,6 +348,77 @@ public class Expense {
 		}
 		tags = tags.substring(0, tags.length()-1);
 		return tags;
+	}
+	
+	/**
+	 * 
+	 * Get the expense with id expenseId from the database 
+	 * 
+	 * @param expenseId - the id of the expense you wish to get
+	 * @return Expense populated with the expense record
+	 */
+	public static Expense get(long expenseId) {
+		Expense returnExpense = null;
+		
+		Connection connection = DB.getConnection();
+		
+		PreparedStatement psExpenseSelect = null;
+		PreparedStatement psTagSelect = null;
+		
+		ResultSet rsExpenseSelect = null;
+		ResultSet rsTagSelect = null;
+		
+		try {
+			// select the expense record
+			psExpenseSelect = connection.prepareStatement("SELECT * FROM expenses WHERE id = ?");
+			psExpenseSelect.setLong(1, expenseId);
+			rsExpenseSelect = psExpenseSelect.executeQuery();
+			
+			// select the tag the expense is attatched to
+			psTagSelect = connection.prepareStatement("SELECT * FROM expenses_tags WHERE id = ?");
+			psTagSelect.setLong(1, rsExpenseSelect.getLong("tag"));
+			rsTagSelect = psTagSelect.executeQuery();
+			
+			// choose the constructor based on if the expense is tied to a scheduler 
+			rsExpenseSelect.getLong("scheduler");
+			if (rsExpenseSelect.wasNull()) {
+				returnExpense = new Expense(rsExpenseSelect.getString("owner"), rsExpenseSelect.getString("amount"),
+						rsTagSelect.getString("name"), rsExpenseSelect.getString("date_occur"),
+						rsExpenseSelect.getString("description"));				
+			} else {
+				returnExpense = new Expense(rsExpenseSelect.getString("owner"), rsExpenseSelect.getString("amount"),
+						rsTagSelect.getString("name"), rsExpenseSelect.getString("date_occur"),
+						rsExpenseSelect.getString("description"), rsExpenseSelect.getLong("scheduler"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rsExpenseSelect != null) {
+					rsExpenseSelect.close();
+				}
+				
+				if (rsTagSelect != null) {
+					rsTagSelect.close();
+				}
+				
+				if (psExpenseSelect != null) {
+					psExpenseSelect.close();
+				}
+				
+				if (psTagSelect != null) {
+					psTagSelect.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return returnExpense;
 	}
 	
 }
