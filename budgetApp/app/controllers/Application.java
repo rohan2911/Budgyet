@@ -9,8 +9,18 @@ import models.Income;
 import play.mvc.*;
 import views.html.*;
 
+/**
+ * Controls loading the index page.
+ * @author Rohan, Leslie, Tracey, Jeremy, Hana
+ *
+ */
 public class Application extends Controller {
 	
+	/**
+	 * Displays the index page containing appropriate data;
+	 *  includes list of budgets and submists of recent incomes and expenses.
+	 * @return
+	 */
     public static Result index() {
     	String username = session("connected_username");
     	if (username != null) {

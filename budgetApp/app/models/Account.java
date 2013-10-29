@@ -11,6 +11,11 @@ import play.data.validation.Constraints.Required;
 import play.data.validation.ValidationError;
 import play.db.DB;
 
+/**
+ * The Account class handles all the logic involved in handling account information.
+ * @author Rohan, Leslie, Tracey, Jeremy, Hana
+ *
+ */
 public class Account {
 	
 	@Required
@@ -77,8 +82,9 @@ public class Account {
 	}
 
 	/**
-	 * Form validator. Checks for 
-	 * @return
+	 * Form validator. Checks for certain constraints on each forms,
+	 * and assigns the appropriate error. 
+	 * @return list of errors if there are any.
 	 */
 	public List<ValidationError> validate() {
 		List<ValidationError> errors = new ArrayList<ValidationError>();

@@ -128,7 +128,7 @@
                 <div class="modal-body">
                 <!-- begin create budget -->
 			    @form(action = routes.Budgets.addBudget(), 'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkBudgetSubmit(this)", 'role -> "form") {
-					
+					<input type="hidden" name="source" value="home">
 					@formGroup {
 				  		<input type="text" id="budget_title" class="form-control" name="budget_title" placeholder="Title" maxlength="100">
 			  		}
@@ -168,19 +168,7 @@
 				  	@formGroup {
 				  		<textarea rows="2" name="budget_description" class="form-control" maxlength="256" placeholder="Description"></textarea>
 				  	}
-				  	
-				  	@formGroup {
-					  	<select name="budget_repeat" class="selectpicker show-tick show-menu-arrow">
-							<option value="0">Don't Repeat</option>
-							<optgroup label="Repeat">
-								<option value="1">Daily</option>
-								<option value="2">Weekly</option>
-								<option value="3">Fortnightly</option>
-								<option value="4">Monthly</option>
-							</optgroup>
-						</select>
-					}
-			    
+
 			   	<!-- end create budget -->
                 </div>
                   
@@ -277,7 +265,7 @@
                 <div class="modal-body">
 					<!-- begin expense form -->
 					@form(action = routes.Expenses.addExpense(), 'id -> "expenseForm", 'class -> "form-horizontal", 'onSubmit -> "return checkExpenseSubmit(this)", 'role -> "form") {
-						
+						<input type="hidden" name="source" value="home">
 						@formGroup {
 							<input type="text" name="expense_amount" value="1.00">
 						}

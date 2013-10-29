@@ -10,8 +10,17 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
 
+/**
+ * Controls the incomes.
+ * @author Rohan, Leslie, Tracey, Jeremy, Hana
+ */
 public class Incomes extends Controller {
 
+	/**
+	 * Adds the income to the system. 
+	 * @return if user is logged in, redirect to the incomes page, 
+	 * 			otherwise, redirect to the index page.
+	 */
 	public static Result addIncome() {
 		String username = session("connected_username");
 		if (username != null) {
@@ -49,6 +58,11 @@ public class Incomes extends Controller {
 		
 	}
 	
+	/**
+	 * Displays the incomes page. 
+	 * @return if user is logged in, load the incomes page,
+	 * 			otherwise, redirect to the index page.
+	 */
 	public static Result incomes() {
 		
 		String username = session("connected_username");
@@ -70,6 +84,12 @@ public class Incomes extends Controller {
     			Income.listToString(tagSums), tagNames));
 	}
 	
+	/**
+	 * Load the edit page for the specified income. 
+	 * @param id internal id of the income to be edited
+	 * @return load the edit income page if user is logged in,
+	 * 			otherwise redirect to the index page.
+	 */
 	public static Result showEditIncome(long id) {
 		
 		String username = session("connected_username");
@@ -91,6 +111,12 @@ public class Incomes extends Controller {
 		
 	}
 	
+	/**
+	 * Edits the income on the system.
+	 * @param id internal id of the income to be edited
+	 * @return if user is logged in, redirect to the incomes page,
+	 * 			otherwise, redirect to the index page.
+	 */
 	public static Result editIncome(long id) {
 		String username = session("connected_username");
 		if (username != null) {
@@ -143,6 +169,12 @@ public class Incomes extends Controller {
 		return redirect(routes.Application.index());
 	}
 	
+	/**
+	 * Removes the income from the system.
+	 * @param id internal id of the income to be removed from the db.
+	 * @return if user is logged in, redirect to the incomes page,
+	 * 			otherwise, redirect to the index page.
+	 */
 	public static Result removeIncome (long id) {
 		String username = session("connected_username");
 		String userId = session().get("connected_id");

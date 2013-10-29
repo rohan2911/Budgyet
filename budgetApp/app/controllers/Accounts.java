@@ -7,8 +7,17 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
 
+/**
+ * Controls the account objects.
+ * @author Rohan, Leslie, Hana, Tracey, Jeremy
+ */
 public class Accounts extends Controller {
 
+	/**
+	 * Logs the user in, with the username and password values from
+	 * the forms.
+	 * @return redirects to index page.
+	 */
     public static Result login() {
     	
     	// retrieve form data
@@ -30,18 +39,28 @@ public class Accounts extends Controller {
     	}
     }
     
+    /**
+     * Logs the user out.
+     * @return clears the session and redirects to the index page.
+     */
     public static Result logout() {
     	session().clear();
     	return redirect(routes.Application.index());
     }
     
     
-    
+    /**
+     * Displays the register page.
+     */
     public static Result register() {
     	Form<Account> registerForm = Form.form(Account.class);
     	return ok(register.render(registerForm));
     }
 	
+    /**
+     * Adds the account to the system. 
+     * @return redirects to the index page.
+     */
     public static Result addAccount() {
     	
     	Form<Account> accountForm = Form.form(Account.class);

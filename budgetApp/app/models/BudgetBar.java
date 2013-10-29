@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Class to store info for budget progress bar.
- * @author Hana
+ * @author Rohan, Leslie, Tracey, Jeremy, Hana
  *
  */
 public class BudgetBar {

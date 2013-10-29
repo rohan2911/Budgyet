@@ -29,7 +29,7 @@ create table accounts (
 create table incomes_tags (
 	id bigint not null auto_increment,
 	owner bigint not null,
-	name varchar(16),
+	name text,
 	
 	primary key (id),
 	foreign key (owner) references accounts(id)
@@ -91,7 +91,7 @@ create table incomes (
 create table expenses_tags (
 	id bigint not null auto_increment,
 	owner bigint,
-	name varchar(16),
+	name text,
 	
 	primary key (id),
 	foreign key (owner) references accounts(id)

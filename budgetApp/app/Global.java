@@ -18,7 +18,11 @@ import controllers.ScheduleActor;
 
 public class Global extends GlobalSettings {
 
- public void onStart(Application app) {
+	/**
+	 * Always executes when app starts.
+	 * Also initialises the scheduler when the app starts up.
+	 */
+	public void onStart(Application app) {
         Logger.info("Application has started");
         
         ActorRef scheduleRef = Akka.system().actorOf(Props.create(ScheduleActor.class));
@@ -45,10 +49,16 @@ public class Global extends GlobalSettings {
         		Akka.system().dispatcher(), null);
     }
 
+	/**
+	 * Always called when the app is shutting down.
+	 */
     public void onStop(Application app) {
         Logger.info("Application shutdown...");
     }
     
+    /**
+     * Called before each request.
+     */
     public Action onRequest(Request request, Method actionMethod) {
         System.out.println("before each request..." + request.toString());
         return super.onRequest(request, actionMethod);

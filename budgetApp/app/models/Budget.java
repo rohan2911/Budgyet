@@ -18,8 +18,8 @@ import java.util.List;
 import play.db.DB;
 
 /**
- * Budget model
- *
+ * Budget model, handles all logic associated with budget information.
+ * @author Rohan, Leslie, Tracey, Jeremy, Hana
  */
 public class Budget {
 
@@ -342,6 +342,12 @@ public class Budget {
 		return success;
 	}
 	
+	/**
+	 * Checks if a budget is owned by a user.
+	 * @param userId the internal id of the use r
+	 * @param budgetId the internal id of the budget
+	 * @return true if the budget belongs to the user, false otherwise.
+	 */
 	public static boolean isOwner(long userId, long budgetId) {
 		boolean isOwner = false;
 		

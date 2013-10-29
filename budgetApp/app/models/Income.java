@@ -15,6 +15,11 @@ import java.util.List;
 
 import play.db.DB;
 
+/**
+ * Income class responsible for handing logic associated with incomes.
+ * @author Hana
+ *
+ */
 public class Income {
 
 	public long id;
@@ -78,7 +83,7 @@ public class Income {
 	/**
 	 * Adds the specified income to the db.
 	 * @param income the Income object that holds data to be added to the db.
-	 * @return
+	 * @return true if successfully added, false otherwise
 	 */
 	public static boolean add(Income income) {
 		

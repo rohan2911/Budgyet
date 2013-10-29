@@ -15,6 +15,11 @@ import java.util.List;
 
 import play.db.DB;
 
+/**
+ * Expense class responsible for handling logic related to expenses
+ * @author Rohan, Leslie, Tracey, Jeremy, Hana
+ *
+ */
 public class Expense {
 
 	public long id;
@@ -78,7 +83,7 @@ public class Expense {
 	/**
 	 * Adds the specified expense to the db.
 	 * @param expense the Expense object that holds data to be added to the db.
-	 * @return
+	 * @return true if successfully added, false otherwise
 	 */
 	public static boolean add(Expense expense) {
 		

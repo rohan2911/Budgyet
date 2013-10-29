@@ -12,8 +12,19 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.*;
 
+/**
+ * Controls the expenses.
+ * @author Rohan, Leslie, Tracey, Jeremy, Hana
+ *
+ */
 public class Expenses extends Controller {
 
+	/**
+	 * Adds the expense to the system, with the information
+	 * retrieved from the form. Also sets the scheduler appropriately.
+	 * @return if user is logged in, redirect to the page displaying 
+	 * 			their expenses, otherwise, redirect to the index page. 
+	 */
 	public static Result addExpense() {
 		
 		String username = session("connected_username");
@@ -51,6 +62,11 @@ public class Expenses extends Controller {
 		
 	}
 	
+	/**
+	 * Adds the expense to the system.
+	 * @return if user is logged in, redirect to the expenses page, 
+	 * 			otherwise, redirect to the index page.
+	 */
 	public static Result expenses() {
 		
 		String username = session("connected_username");
@@ -72,6 +88,12 @@ public class Expenses extends Controller {
     			Expense.listToString(tagSums), tagNames));
 	}
 	
+	/**
+	 * Displays the editing page for the specified expense id.
+	 * @param id internal db id of the expense to be edited
+	 * @return if user is logged in, load the expense edit page, 
+	 * 			otherwise redirect to the index page.
+	 */
 	public static Result showEditExpense(long id) {
 		
 		String username = session("connected_username");
@@ -93,6 +115,12 @@ public class Expenses extends Controller {
 		
 	}
 	
+	/**
+	 * Edits the expense. Also appropriately edits the scheduler. 
+	 * @param id internal db id of the expense to be edited
+	 * @return if user is logged in, redirect to the expenses page, 
+	 * 			otherwise redirect to the index page.
+	 */
 	public static Result editExpense(long id) {
 		String username = session("connected_username");
 		if (username != null) {
@@ -146,6 +174,12 @@ public class Expenses extends Controller {
 		return redirect(routes.Application.index());
 	}
 	
+	/**
+	 * Removes the expense from the system.
+	 * @param id internal id of the expense to be removed.
+	 * @return if user is logged in, redirect to the expenses page,
+	 * 			otherwise, redirect to index page.
+	 */
 	public static Result removeExpense (long id) {
 		String username = session("connected_username");
 		String userId = session().get("connected_id");
