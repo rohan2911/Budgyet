@@ -35,4 +35,9 @@ public class Budgets extends Controller {
 		return ok(budgets.render(Budget.getProgressBudgets(session("connected_id"))));
 	}
 	
+	public static Result removeBudget(long id) {
+		Budget.remove(id);
+		return budgets();
+	}
+	
 }

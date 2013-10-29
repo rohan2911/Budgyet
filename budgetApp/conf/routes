@@ -29,6 +29,8 @@ GET     /removeexpense/:id			controllers.Expenses.removeExpense(id: Long)
 GET 	/budgets					controllers.Budgets.budgets()
 POST	/addbudget					controllers.Budgets.addBudget()
 
+GET     /removebudget/:id			controllers.Budgets.removeBudget(id: Long)
+
 #POST	/tasks/:id/delete			controllers.Application.deleteTask(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path

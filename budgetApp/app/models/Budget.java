@@ -277,6 +277,43 @@ public class Budget {
 		}
 		return budgetBars;
 	}
+	
+	/**
+	 * 
+	 * Deletes a budget form the server
+	 * 
+	 * @param budgetId - id of the budget to be deleted
+	 * @return success
+	 */
+	public static boolean remove(long budgetId) {
+		boolean success = true;
+		
+		Connection connection = DB.getConnection();
+		PreparedStatement psRemoveBudget = null;
+		
+		try {
+			psRemoveBudget = connection.prepareStatement("DELETE FROM budgets WHERE id = ?");
+			psRemoveBudget.setLong(1, budgetId);
+			psRemoveBudget.executeUpdate();
+		} catch (SQLException e) {
+			success = false;
+			e.printStackTrace();
+		} finally {
+			try {
+				if (psRemoveBudget != null) {
+					psRemoveBudget.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return success;
+	}
 }
 
 
