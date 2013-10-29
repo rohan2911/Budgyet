@@ -9,12 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 import play.db.DB;
 
@@ -158,7 +154,7 @@ public class ScheduledExpense {
 		try {
 			
 			// we select the Expense schedulers who's next scheduled payment time has elapsed
-			ps1 = connection.prepareStatement("SELECT * FROM scheduled_expenses WHERE date_next < ?");
+			ps1 = connection.prepareStatement("SELECT * FROM scheduled_expenses WHERE date_next <= ?");
 			ps1.setDate(1, new java.sql.Date(currentDate.getTime()));
 			rs = ps1.executeQuery();
 			while (rs.next()) {
@@ -267,46 +263,50 @@ public class ScheduledExpense {
 			ps3 = connection.prepareStatement("SELECT * FROM expenses_tags WHERE id = ?");
 			ps3.setLong(1, tagId);
 			rs3 = ps3.executeQuery();
-			
-			String expenseTag = rs3.getString("name");
-			
-			// translate period flag into a month or number of days
-			int days = 0;
-			int months = 0;
-			if (dbPeriod == 1) {
-				days = 1;
-				months = 0;
-			} else if (dbPeriod == 2) {
-				days = 7;
-				months = 0;
-			} else if (dbPeriod == 3) {
-				days = 14;
-				months = 0;
-			} else if (dbPeriod == 4) {
-				days = 0;
-				months = 1;
-			} else {
-				days = 0;
-				months = 0;
-			}
-			
-			Expense currExpense = null;
-			
-			// add the period to the next date the scheduled transaction is to be made until we have covered all the scheduled transactions
-			while (nextDate.getTime().getTime() <= currentDate.getTime() ) {
-				currExpense = new Expense(expenseOwner, expenseAmount, expenseTag,
-						new SimpleDateFormat("yyyy-MM-dd").format(nextDate.getTime()), expenseDescription, id);
+			if(rs3.next()) {
+				String expenseTag = rs3.getString("name");
 				
-				Expense.add(currExpense);
-				nextDate.add(Calendar.DATE, (int) days);
-				nextDate.add(Calendar.MONTH, (int) months);
+				
+				// translate period flag into a month or number of days
+				int days = 0;
+				int months = 0;
+				if (dbPeriod == 1) {
+					days = 1;
+					months = 0;
+				} else if (dbPeriod == 2) {
+					days = 7;
+					months = 0;
+				} else if (dbPeriod == 3) {
+					days = 14;
+					months = 0;
+				} else if (dbPeriod == 4) {
+					days = 0;
+					months = 1;
+				} else {
+					days = 0;
+					months = 0;
+					return false;
+				}
+				
+				Expense currExpense = null;
+				
+				// add the period to the next date the scheduled transaction is to be made until we have covered all the scheduled transactions
+				while (nextDate.getTime().getTime() <= currentDate.getTime() ) {
+					currExpense = new Expense(expenseOwner, expenseAmount, expenseTag,
+							new SimpleDateFormat("yyyy-MM-dd").format(nextDate.getTime()), expenseDescription, id);
+					
+					Expense.add(currExpense);
+					nextDate.add(Calendar.DATE, (int) days);
+					nextDate.add(Calendar.MONTH, (int) months);
+				}
+				
+				// update date in scheduled Expenses table
+				ps4 = connection.prepareStatement("UPDATE scheduled_expenses SET date_next = ? WHERE id = ?");
+				ps4.setDate(1, new java.sql.Date(nextDate.getTime().getTime()));
+				ps4.setLong(2, id);
+				ps4.executeUpdate();
 			}
-			
-			// update date in scheduled Expenses table
-			ps4 = connection.prepareStatement("UPDATE scheduled_expenses SET date_next = ? WHERE id = ?");
-			ps4.setDate(1, new java.sql.Date(nextDate.getTime().getTime()));
-			ps4.setLong(2, id);
-			ps4.executeUpdate();
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -338,6 +338,108 @@ public class ScheduledExpense {
 	}
 	
 	/**
+	 * 
+	 * Updates a scheduled expense and, expense instances created by that scheduled expense
+	 * 
+	 * Expense instances are updated if they were created after the date in the schedueled expense
+	 * object.
+	 * 
+	 * @param scheduledExpenseId
+	 * @return
+	 */
+	public boolean update(long scheduledExpenseId) {
+		boolean success = true;
+		Connection connection =  DB.getConnection();
+		
+		PreparedStatement psGetScheduledExpense = null;
+		PreparedStatement psGetAssociatedExpenses = null;
+		PreparedStatement psRemoveExpenses = null;
+		PreparedStatement psGetTag = null;
+		PreparedStatement psCreateTag = null;
+		PreparedStatement psUpdateScheduled = null;
+		
+		ResultSet rsGetScheduledExpense = null;
+		ResultSet rsGetAssociatedExpenses = null;
+		ResultSet rsGetTag = null;
+		ResultSet rsTagKey = null;
+		
+		try {
+			// get the scheduled expense record
+			psGetScheduledExpense = connection.prepareStatement("SELECT * FROM scheduled_expenses WHERE id = ?");
+			psGetScheduledExpense.setLong(1, scheduledExpenseId);
+			rsGetScheduledExpense = psGetScheduledExpense.executeQuery();
+			
+			if (rsGetScheduledExpense.next()) {
+				// get a list of expenses created after the date specified in ScheduledExpense
+				psGetAssociatedExpenses = connection.prepareStatement("SELECT * FROM expenses WHERE scheduler = ? AND date_occur >= ?");
+				psGetAssociatedExpenses.setLong(1, rsGetScheduledExpense.getLong("id"));
+				psGetAssociatedExpenses.setDate(2, new java.sql.Date(this.date_next.getTime()));
+				rsGetAssociatedExpenses = psGetAssociatedExpenses.executeQuery();
+				
+				// remove expenses from date so we can recreate them with init()
+				while (rsGetAssociatedExpenses.next()) {
+					psRemoveExpenses = connection.prepareStatement("DELETE FROM expenses WHERE id = ?");
+					psRemoveExpenses.setLong(1, rsGetAssociatedExpenses.getLong("id"));
+					psRemoveExpenses.executeUpdate();
+				}
+				
+				if (this.period > 0) {
+					// check if the tag exists and get id (or create the tag)
+					psGetTag = connection.prepareStatement("SELECT * FROM expenses_tags WHERE name = ? AND owner = ?");
+					psGetTag.setString(1, this.tagName);
+					psGetTag.setLong(2, this.owner);
+					rsGetTag = psGetTag.executeQuery();
+					
+					long tagId = 0;
+					
+					if (rsGetTag.next()) {
+						tagId = rsGetTag.getLong("id");
+					} else {
+						psCreateTag = connection.prepareStatement("INSERT INTO expenses_tags (name, owner) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+						psCreateTag.setString(1, this.tagName);
+						psCreateTag.setLong(2, this.owner);
+						psCreateTag.executeUpdate();
+						rsTagKey = psCreateTag.getGeneratedKeys();
+						if (rsTagKey.next()) {
+							tagId = rsTagKey.getLong(1);
+						}
+					}
+					
+					
+					psUpdateScheduled = connection.prepareStatement("UPDATE scheduled_expenses SET date_next = ?, period = ?, "
+							+ "owner = ?, expense_amount = ?, expense_description = ?, tag = ? WHERE id = ?");
+					psUpdateScheduled.setDate(1, new java.sql.Date(this.date_next.getTime()));
+					psUpdateScheduled.setInt(2, this.period);
+					psUpdateScheduled.setLong(3, this.owner);
+					psUpdateScheduled.setBigDecimal(4, this.expense_amount);
+					psUpdateScheduled.setString(5, this.expense_description);
+					psUpdateScheduled.setLong(6, tagId);
+					
+					psUpdateScheduled.setLong(7, scheduledExpenseId);
+					
+					psUpdateScheduled.executeUpdate();
+				} else {
+					// period = 0, we recreate the expense with new details
+					Expense replacement = new Expense(Long.toString(this.owner), this.expense_amount.toString(), this.tagName, 
+							new SimpleDateFormat("yyyy-MM-dd").format(this.date_next.getTime()), this.expense_description);
+					Expense.add(replacement);
+					remove(scheduledExpenseId);
+				}
+				
+				// recreate the expense instances with the new expense details
+				ScheduledExpense.init(scheduledExpenseId);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			success = false;
+		} finally {
+			
+		}
+		
+		return success;
+	}
+
+	/**
 	 *
 	 * Gets the scheduler for a given expense
 	 * 
@@ -359,17 +461,20 @@ public class ScheduledExpense {
 			psExpenseSelect.setLong(1, expenseId);
 			rsExpense = psExpenseSelect.executeQuery();
 			
-			long schedulerId = rsExpense.getLong(1);
-			
-			// select the schedueler object
-			psSchedulerSelect = connection.prepareStatement("SELECT * FROM scheduled_expenses WHERE id = ?");
-			psSchedulerSelect.setLong(1, schedulerId);
-			rsScheduler = psSchedulerSelect.executeQuery();
-			
-			// set return value
-			returnScheduler = new ScheduledExpense(rsScheduler.getString("date_next"), rsScheduler.getString("period"),
-					rsScheduler.getString("owner"), rsScheduler.getString("expense_amount"),
-					rsScheduler.getString("expense_description"), rsScheduler.getString("tag"));
+			if (rsExpense.next()) {
+				long schedulerId = rsExpense.getLong(1);
+				
+				// select the schedueler object
+				psSchedulerSelect = connection.prepareStatement("SELECT * FROM scheduled_expenses WHERE id = ?");
+				psSchedulerSelect.setLong(1, schedulerId);
+				rsScheduler = psSchedulerSelect.executeQuery();
+				if (rsScheduler.next()) {
+					// set return value
+					returnScheduler = new ScheduledExpense(rsScheduler.getString("date_next"), rsScheduler.getString("period"),
+							rsScheduler.getString("owner"), rsScheduler.getString("expense_amount"),
+							rsScheduler.getString("expense_description"), rsScheduler.getString("tag"));
+				}
+			}
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -401,5 +506,90 @@ public class ScheduledExpense {
 		}
 		
 		return returnScheduler;
+	}
+	
+	/**
+	 * removes the expense scheduler at id from the database
+	 * 
+	 * @returns success
+	 */
+	
+	public static boolean remove(long id) {
+		boolean success = true;
+		
+		Connection connection = DB.getConnection();
+		PreparedStatement psUpdateExpenses = null;
+		PreparedStatement psScheduledExpenseDelete = null;
+		
+		try {
+			psUpdateExpenses = connection.prepareStatement("UPDATE expenses SET scheduler = NULL WHERE scheduler = ?");
+			psUpdateExpenses.setLong(1, id);
+			psUpdateExpenses.executeUpdate();
+			
+			psScheduledExpenseDelete = connection.prepareStatement("DELETE FROM scheduled_expenses WHERE id = ?");
+			psScheduledExpenseDelete.setLong(1, id);
+			psScheduledExpenseDelete.executeUpdate();
+			
+			
+		} catch (SQLException e) {
+			success = false;
+			e.printStackTrace();
+		} finally {
+			try {
+				if (psUpdateExpenses != null) {
+					psUpdateExpenses.close();
+				}
+				
+				if (psScheduledExpenseDelete != null) {
+					psScheduledExpenseDelete.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return success;
+	}
+	
+	/**
+	 * 
+	 * Removes a scheduler if there are no expenses tied to it
+	 * 
+	 * @param id - id of the scheduler being removed
+	 * @return success
+	 */
+	public static boolean clean(long id) {
+		boolean success = true;
+		Connection connection = DB.getConnection();
+		
+		
+		PreparedStatement psRemoveScheduler = null; 
+		
+		try {
+			psRemoveScheduler = connection.prepareStatement("DELETE FROM scheduled_expenses WHERE scheduled_expenses.id = ? AND "
+					+ "NOT EXISTS (SELECT * FROM expenses WHERE expenses.scheduler = ?)");
+			psRemoveScheduler.setLong(1, id);
+			psRemoveScheduler.setLong(2, id);
+			psRemoveScheduler.executeUpdate();
+		} catch (SQLException e) {
+			success = false;
+			e.printStackTrace();
+		} finally {
+			try {
+				if (psRemoveScheduler != null) {
+					psRemoveScheduler.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return success;
 	}
 }

@@ -221,21 +221,20 @@
 
             });
 
-            function addIncomeTag(tag) {
-    			$("#income_tags").tagsManager('pushTag', tag);
-    		}
-
-    		function checkIncomeSubmit(f) {
-    			if ($("#income_tags").tagsManager('tags').tags.length == 0) {
-    				alert("Please select at least one tag");
-    				return false;
-    			} else {
-    				f.submit();
-    				return false;
-    			}
-    		}
         });
-            
+        function addIncomeTag(tag) {
+			$("#income_tags").tagsManager('pushTag', tag);
+		}
+
+		function checkIncomeSubmit(f) {
+			if ($("#income_tags").tagsManager('tags').tags.length == 0) {
+				alert("Please select at least one tag");
+				return false;
+			} else {
+				f.submit();
+				return false;
+			}
+		}   
     </script>
         
 }

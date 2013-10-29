@@ -46,13 +46,13 @@ public class Incomes extends Controller {
 		List<String> incomeTagNames = Income.getIncomeTags(session().get("connected_id"));	// get list of income tag names for graph
 		List<String> tagSums = Income.getTagSum(session().get("connected_id"));	// get sum of the income values by tag
 		
-		if (tagNames.size() == 0) {
-			tagNames.add("Nothing");
+		if (incomeTagNames.size() == 0) {
+			incomeTagNames.add("Nothing");
 			tagSums.add("0.00");
 		}
 		
 		// return order: list of all incomes as Incomes object, string of tag names, string of the sum of income values by tag.
-    	return ok(incomes.render(Income.getIncomes(session("connected_id")), Income.listToString(tagNames), Income.listToString(tagNames),
+    	return ok(incomes.render(Income.getIncomes(session("connected_id")), Income.listToString(tagNames), Income.listToString(incomeTagNames),
     			Income.listToString(tagSums), tagNames));
 	}
 	
