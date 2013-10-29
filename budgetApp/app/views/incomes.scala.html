@@ -1,4 +1,4 @@
-@(incomes: List[Income], tagnames: String, tagamounts: String, incomeTags: List[String])
+@(incomes: List[Income], tagnames: String, incometagnames: String, tagamounts: String, incomeTags: List[String])
 
 @import helper._
  
@@ -47,7 +47,7 @@
 	<br>
         
    	<!-- Graph -->
-    <div class="pieGraph" title="Income Overview" tags="@tagnames" tagValues="@tagamounts"></div>
+    <div class="pieGraph" title="Income Overview" tags="@incometagnames" tagValues="@tagamounts"></div>
     
    	<br>
    	
@@ -77,6 +77,7 @@
 	            <td>@inc.tagName</td>
 	            <td>@inc.amount</td>
 	            <td><a href="@routes.Incomes.showEditIncome(inc.id)"><button type="button" class="btn btn-default btn-xs">Edit</button></a></td>
+	            <td><a href="@routes.Incomes.removeIncome(inc.id)"><button type="button" class="btn btn-default btn-xs">Remove</button></a></td>
 	        </tr>
 	        }
 	    </table>

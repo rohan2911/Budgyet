@@ -25,7 +25,7 @@ public class Global extends GlobalSettings {
         
         ScheduledIncome.scheduledTask();
         
-        // calculate the number of hours and minutes till 1 AM 
+        // calculate the number of hours and minutes till 1 AM , and set to initial delay for scheduled tasks
         Calendar currDate = Calendar.getInstance();
         int timeHours = currDate.get(Calendar.HOUR_OF_DAY);
         int timeMinutes = currDate.get(Calendar.MINUTE);

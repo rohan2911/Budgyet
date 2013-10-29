@@ -25,8 +25,7 @@ public class Income {
 	public Date date_occur;
 	public String date_display;
 	public String description;
-	public Long scheduler;	// id of the schedular assignmed to the income
-	public int period;	// time period of the schedule
+	public Long scheduler;	// id of the scheduler assigned to the income
 	
 	/**
 	 * Contructor for Income class.
@@ -51,7 +50,6 @@ public class Income {
 		}
 		this.description = description;
 		this.scheduler = scheduler;
-		this.period = 0;
 	}
 	
 	/**
@@ -74,8 +72,7 @@ public class Income {
 			e.printStackTrace();
 		}
 		this.description = desc;
-		this.scheduler = (Long) null;
-		this.period = 0;
+		this.scheduler = (long) 0;
 	}
 
 	/**
@@ -120,7 +117,7 @@ public class Income {
 				psInsIncome.setBigDecimal(2, income.amount);
 				psInsIncome.setString(3, income.description);
 				psInsIncome.setDate(4, new java.sql.Date(income.date_occur.getTime()));
-				if (income.scheduler != null) {
+				if (income.scheduler != 0) {
 					psInsIncome.setLong(5, income.scheduler);
 				} else {
 					psInsIncome.setNull(5, java.sql.Types.BIGINT);
@@ -285,13 +282,15 @@ public class Income {
 		List<String> tagSums = new ArrayList<String>();
 		List<String> tagNameList = getTags(accId);
 		Connection connection = DB.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		for (String tag: tagNameList) {
 			try {
-				PreparedStatement ps = connection.prepareStatement("select sum(amount) as total from incomes i join incomes_tags it "
+				ps  = connection.prepareStatement("select sum(amount) as total from incomes i join incomes_tags it "
 						+ "on i.tag = it.id and it.owner = ? where it.name = ?");
 				ps.setLong(1, Long.parseLong(accId));
 				ps.setString(2, tag);
-				ResultSet rs = ps.executeQuery();
+				rs = ps.executeQuery();
 				BigDecimal amt = new BigDecimal("0.00");
 				String sum = "";
 				if (rs.next()) {
@@ -306,9 +305,67 @@ public class Income {
 				e.printStackTrace();
 			}
 		}
+		
+		try {
+			if (rs != null) {
+				rs.close();
+			}
+			if (ps != null) {
+				ps.close();
+			}
+			if (connection != null) {
+				connection.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return tagSums;
 	}
 	
+	
+	/**
+	 * Gets the list of the owner's current income tags, but only those with existing incomes.
+	 * Used for displaying the tags on the tag cost breakdown.
+	 * @param accId user account's id
+	 * @return list of all the tag names that the user owns
+	 */
+	public static List<String> getIncomeTags(String accId) {
+		List<String> tagList = new ArrayList<String>();
+		
+		Connection connection = DB.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			ps = connection.prepareStatement("SELECT name FROM incomes_tags it "
+					+ "WHERE it.owner = ? AND EXISTS (SELECT incomes.id FROM incomes WHERE tag = it.id)");
+			ps.setLong(1, Long.parseLong(accId));
+			rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				tagList.add(rs.getString(1));
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (ps != null) {
+					ps.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return tagList;
+	}
 	
 	/**
 	 * Gets the list of the owner's current income tags. 
@@ -324,12 +381,12 @@ public class Income {
 		ResultSet rs = null;
 		
 		try {
-			ps = connection.prepareStatement("SELECT name FROM incomes_tags WHERE owner = ?");
+			ps = connection.prepareStatement("SELECT name FROM incomes_tags it WHERE it.owner = ?");
 			ps.setLong(1, Long.parseLong(accId));
 			rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				tagList.add(rs.getString("name"));
+				tagList.add(rs.getString(1));
 			}
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
@@ -365,7 +422,9 @@ public class Income {
 		for (String t: taglist) {
 			tags += t+",";
 		}
-		tags = tags.substring(0, tags.length()-1);
+		if (tags.length() > 0) {
+			tags = tags.substring(0, tags.length()-1);
+		}
 		return tags;
 	}
 	
@@ -393,21 +452,27 @@ public class Income {
 			psIncomeSelect.setLong(1, incomeId);
 			rsIncomeSelect = psIncomeSelect.executeQuery();
 			
-			// select the tag the income is attatched to
-			psTagSelect = connection.prepareStatement("SELECT * FROM incomes_tags WHERE id = ?");
-			psTagSelect.setLong(1, rsIncomeSelect.getLong("tag"));
-			rsTagSelect = psTagSelect.executeQuery();
-			
-			// choose the constructor based on if the income is tied to a scheduler 
-			rsIncomeSelect.getLong("scheduler");
-			if (rsIncomeSelect.wasNull()) {
-				returnIncome = new Income(rsIncomeSelect.getString("owner"), rsIncomeSelect.getString("amount"),
-						rsTagSelect.getString("name"), rsIncomeSelect.getString("date_occur"),
-						rsIncomeSelect.getString("description"));				
-			} else {
-				returnIncome = new Income(rsIncomeSelect.getString("owner"), rsIncomeSelect.getString("amount"),
-						rsTagSelect.getString("name"), rsIncomeSelect.getString("date_occur"),
-						rsIncomeSelect.getString("description"), rsIncomeSelect.getLong("scheduler"));
+			if (rsIncomeSelect.next()) {
+				
+				// select the tag the income is attatched to
+				psTagSelect = connection.prepareStatement("SELECT * FROM incomes_tags WHERE id = ?");
+				psTagSelect.setLong(1, rsIncomeSelect.getLong("tag"));
+				rsTagSelect = psTagSelect.executeQuery();
+				
+				if (rsTagSelect.next()) {
+					// choose the constructor based on if the income is tied to a scheduler 
+					rsIncomeSelect.getLong("scheduler");
+					if (rsIncomeSelect.wasNull()) {
+						returnIncome = new Income(rsIncomeSelect.getString("owner"), rsIncomeSelect.getString("amount"),
+								rsTagSelect.getString("name"), rsIncomeSelect.getString("date_occur"),
+								rsIncomeSelect.getString("description"));
+					} else {
+						returnIncome = new Income(rsIncomeSelect.getString("owner"), rsIncomeSelect.getString("amount"),
+								rsTagSelect.getString("name"), rsIncomeSelect.getString("date_occur"),
+								rsIncomeSelect.getString("description"), rsIncomeSelect.getLong("scheduler"));
+					}
+				}
+				returnIncome.id = incomeId;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -438,5 +503,92 @@ public class Income {
 		}
 		
 		return returnIncome;
+	}
+	
+	/**
+	 * 
+	 * Checks whether the scheduler for this income exists based on the income id
+	 * and sets this.scheduler
+	 * 
+	 * 
+	 * @return scheduler exists
+	 */
+	
+	public boolean getScheduler() {
+		boolean schedulerExists = false;
+		
+		Connection connection = DB.getConnection();
+		
+		PreparedStatement psSchedulerSelect = null;
+		ResultSet rsSchedulerSelect = null;
+		
+		try {
+			psSchedulerSelect = connection.prepareStatement("SELECT scheduler FROM incomes WHERE id = ?");
+			psSchedulerSelect.setLong(1, this.id);
+			rsSchedulerSelect = psSchedulerSelect.executeQuery();
+			
+			if (rsSchedulerSelect.next()) {
+				long schedulerId = rsSchedulerSelect.getLong(1);
+				if (!rsSchedulerSelect.wasNull()) {
+					schedulerExists = true;
+					this.scheduler = schedulerId;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rsSchedulerSelect != null) {
+					rsSchedulerSelect.close();
+				}
+				
+				if (psSchedulerSelect != null) {
+					psSchedulerSelect.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return schedulerExists;
+	}
+	
+	/**
+	 * removes the income at id from the database
+	 * 
+	 * @returns success
+	 */
+	
+	public static boolean remove(long id) {
+		boolean success = true;
+		
+		Connection connection = DB.getConnection();
+		
+		PreparedStatement psIncomeDelete = null;
+		
+		try {
+			psIncomeDelete = connection.prepareStatement("DELETE FROM incomes WHERE id = ?");
+			psIncomeDelete.setLong(1, id);
+			psIncomeDelete.executeUpdate();
+		} catch (SQLException e) {
+			success = false;
+			e.printStackTrace();
+		} finally {
+			try {
+				if (psIncomeDelete != null) {
+					psIncomeDelete.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return success;
 	}
 }
