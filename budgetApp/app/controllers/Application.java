@@ -16,8 +16,16 @@ public class Application extends Controller {
     	if (username != null) {
     		String accId = session("connected_id");
     		
-    		List<Income> incomes = Income.getIncomes(accId).subList(0, 5);	// store the first 5 incomes
-    		List<Expense> expenses = Expense.getExpenses(accId).subList(0, 5);	// store the first 5 incomes
+    		List<Income> incomes = Income.getIncomes(accId);	
+    		List<Expense> expenses = Expense.getExpenses(accId);	
+    		
+    		if (incomes.size() > 6) {
+    			incomes = incomes.subList(0, 5);
+    		}
+    		
+    		if (expenses.size() > 6) {
+    			expenses = expenses.subList(0, 5);
+    		}
     		
     		return ok(home.render(Income.getTags(accId), Expense.getTags(accId), Budget.getProgressBudgets(accId),
     					incomes, expenses));

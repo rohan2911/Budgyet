@@ -475,6 +475,7 @@ public class Income {
 				returnIncome.id = incomeId;
 			}
 		} catch (SQLException e) {
+			returnIncome = null;
 			e.printStackTrace();
 		} finally {
 			try {

@@ -475,6 +475,7 @@ public class Expense {
 				returnExpense.id = expenseId;
 			}
 		} catch (SQLException e) {
+			returnExpense = null;
 			e.printStackTrace();
 		} finally {
 			try {

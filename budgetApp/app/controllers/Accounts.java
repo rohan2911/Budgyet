@@ -25,7 +25,7 @@ public class Accounts extends Controller {
     		//return redirect(routes.Application.index());
     		return redirect(routes.Application.index());
     	} else {
-    		flash("fail", "invalid username or password");
+    		flash("login_fail", "invalid username or password");
     		return redirect(routes.Application.index());
     	}
     }

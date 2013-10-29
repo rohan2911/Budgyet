@@ -22,6 +22,9 @@ public class Account {
 	@Required
 	private String password;
 	
+	@Required
+	private String password_check;
+	
 	private String first_name;
 	private String last_name;
 	
@@ -49,6 +52,14 @@ public class Account {
 		this.password = password;
 	}
 
+	public String getPassword_check() {
+		return password_check;
+	}
+
+	public void setPassword_check(String password_check) {
+		this.password_check = password_check;
+	}
+
 	public String getFirst_name() {
 		return first_name;
 	}
@@ -65,6 +76,10 @@ public class Account {
 		this.last_name = last_name;
 	}
 
+	/**
+	 * Form validator. Checks for 
+	 * @return
+	 */
 	public List<ValidationError> validate() {
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		
@@ -86,6 +101,8 @@ public class Account {
 		
 		if (password.length() < 6 || username.length() > 30) {
 			errors.add(new ValidationError("password", "password must be between 6-30 characters long"));
+		} else if (!password.equals(password_check)) {
+			errors.add(new ValidationError("password_check", "password did not match!"));
 		}
 		
 		if (!first_name.matches("^[A-Za-z\\s-]*$")) {
@@ -100,9 +117,9 @@ public class Account {
 	}
 	
 	/**
-	 * 
+	 * Adds an account to the db.
 	 * @param account
-	 * @return
+	 * @return true if successfully added to the database, false otherwise
 	 */
 	public static boolean add(Account account) {
 		Connection connection = DB.getConnection();
@@ -135,6 +152,12 @@ public class Account {
 		return success;
 	}
 
+	/**
+	 * Authenticates the user against the password
+	 * @param username
+	 * @param password
+	 * @return 0 if not found, else the id of the account
+	 */
 	public static long authenticate(String username, String password) {
 		Connection connection = DB.getConnection();
 		PreparedStatement ps = null;
@@ -168,6 +191,11 @@ public class Account {
 		return id;
 	}
 
+	/**
+	 * Checks if the given username is unique. i.e. the username does not currently exist in the database.
+	 * @param username
+	 * @return true if unique username, false otherwise
+	 */
 	public static boolean uniqueUsername(String username) {
 		Connection connection = DB.getConnection();
 		PreparedStatement ps = null;
@@ -200,6 +228,11 @@ public class Account {
 		return unique;
 	}
 	
+	/**
+	 * Checks if email is unique in the database/already being used
+	 * @param email
+	 * @return true if email is unique, false otherwise
+	 */
 	public static boolean uniqueEmail(String email) {
 		Connection connection = DB.getConnection();
 		PreparedStatement ps = null;

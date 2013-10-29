@@ -295,6 +295,90 @@ public class Budget {
 		}
 		return budgetBars;
 	}
+	
+	/**
+	 * 
+	 * Deletes a budget form the server
+	 * 
+	 * @param budgetId - id of the budget to be deleted
+	 * @return success
+	 */
+	public static boolean remove(long budgetId) {
+		boolean success = true;
+		
+		Connection connection = DB.getConnection();
+		PreparedStatement psRemoveBudget = null;
+		PreparedStatement psRemoveLink = null; 
+		
+		try {
+			psRemoveLink = connection.prepareStatement("DELETE FROM budgets_tags_map WHERE budget = ?");
+			psRemoveLink.setLong(1, budgetId);
+			psRemoveLink.executeUpdate();
+			
+			psRemoveBudget = connection.prepareStatement("DELETE FROM budgets WHERE id = ?");
+			psRemoveBudget.setLong(1, budgetId);
+			psRemoveBudget.executeUpdate();
+		} catch (SQLException e) {
+			success = false;
+			e.printStackTrace();
+		} finally {
+			try {
+				if (psRemoveBudget != null) {
+					psRemoveBudget.close();
+				}
+				
+				if (psRemoveLink != null) {
+					psRemoveLink.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return success;
+	}
+	
+	public static boolean isOwner(long userId, long budgetId) {
+		boolean isOwner = false;
+		
+		Connection connection = DB.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			ps = connection.prepareStatement("select 1 from budgets where owner = ? and id = ?");
+			ps.setLong(1, userId);
+			ps.setLong(2, budgetId);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				isOwner = true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+				
+				if (rs != null) {
+					rs.close();
+				}
+				
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return isOwner;
+	}
+	
 }
 
 
