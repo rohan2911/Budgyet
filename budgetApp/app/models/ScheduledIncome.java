@@ -433,7 +433,43 @@ public class ScheduledIncome {
 			e.printStackTrace();
 			success = false;
 		} finally {
-			
+			try {
+				if (rsGetScheduledIncome != null) {
+					rsGetScheduledIncome.close();
+				}
+				if (rsGetAssociatedIncomes != null) {
+					rsGetAssociatedIncomes.close();
+				}
+				if (rsGetTag != null) {
+					rsGetTag.close();
+				}
+				if (rsTagKey != null) {
+					rsTagKey.close();
+				}
+				if (psGetScheduledIncome != null) {
+					psGetScheduledIncome.close();
+				}
+				if (psGetAssociatedIncomes != null) {
+					psGetAssociatedIncomes.close();
+				}
+				if (psRemoveIncomes != null) {
+					psRemoveIncomes.close();
+				}
+				if (psGetTag != null) {
+					psGetTag.close();
+				}
+				if (psCreateTag != null) {
+					psCreateTag.close();
+				}
+				if (psUpdateScheduled != null) {
+					psUpdateScheduled.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return success;

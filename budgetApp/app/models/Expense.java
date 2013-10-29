@@ -275,6 +275,21 @@ public class Expense {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+				
+				if (rs != null) {
+					rs.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return expenses;
 	}
@@ -309,7 +324,7 @@ public class Expense {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		}
+		} 
 		
 		try {
 			if (rs != null) {

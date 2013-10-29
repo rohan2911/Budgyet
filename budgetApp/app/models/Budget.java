@@ -276,6 +276,9 @@ public class Budget {
 				if (rs3 != null) {
 					rs3.close();
 				}
+				if (rsTagNames != null) {
+					rs3.close();
+				}
 				if (ps1 != null) {
 					ps1.close();
 				}
@@ -283,6 +286,9 @@ public class Budget {
 					ps2.close();
 				}
 				if (ps3 != null) {
+					ps3.close();
+				}
+				if (psTagNames != null) {
 					ps3.close();
 				}
 				if (connection != null) {

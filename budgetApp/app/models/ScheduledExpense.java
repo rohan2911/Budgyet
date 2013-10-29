@@ -433,7 +433,43 @@ public class ScheduledExpense {
 			e.printStackTrace();
 			success = false;
 		} finally {
-			
+			try {
+				if (rsGetScheduledExpense != null) {
+					rsGetScheduledExpense.close();
+				}
+				if (rsGetAssociatedExpenses != null) {
+					rsGetAssociatedExpenses.close();
+				}
+				if (rsGetTag != null) {
+					rsGetTag.close();
+				}
+				if (rsTagKey != null) {
+					rsTagKey.close();
+				}
+				if (psGetScheduledExpense != null) {
+					psGetScheduledExpense.close();
+				}
+				if (psGetAssociatedExpenses != null) {
+					psGetAssociatedExpenses.close();
+				}
+				if (psRemoveExpenses != null) {
+					psRemoveExpenses.close();
+				}
+				if (psGetTag != null) {
+					psGetTag.close();
+				}
+				if (psCreateTag != null) {
+					psCreateTag.close();
+				}
+				if (psUpdateScheduled != null) {
+					psUpdateScheduled.close();
+				}
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return success;
