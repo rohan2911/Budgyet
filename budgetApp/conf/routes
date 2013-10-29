@@ -17,10 +17,14 @@ POST	/addincome					controllers.Incomes.addIncome()
 GET		/editincome/:id				controllers.Incomes.showEditIncome(id: Long)
 POST	/editincome/:id				controllers.Incomes.editIncome(id: Long)
 
+GET		/removeincome/:id			controllers.Incomes.removeIncome(id: Long)
+
 GET 	/expenses					controllers.Expenses.expenses()
 POST	/addexpense					controllers.Expenses.addExpense()
 GET		/editexpense/:id			controllers.Expenses.showEditExpense(id: Long)
-POST	/editexpense/:id			controllers.Expenses.editExpense(id: Long)
+POST    /editexpense/:id			controllers.Expenses.editExpense(id: Long)
+
+GET     /removeexpense/:id			controllers.Expenses.removeExpense(id: Long)
 
 GET 	/budgets					controllers.Budgets.budgets()
 POST	/addbudget					controllers.Budgets.addBudget()

@@ -2,6 +2,7 @@ package models;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Class to store info for budget progress bar.
@@ -16,6 +17,8 @@ public class BudgetBar {
 	private BigDecimal progress;
 	private String dateStart;
 	private String dateEnd;
+	private List<String> tags;
+	private String description;
 	
 	public BudgetBar() {
 	}
@@ -66,6 +69,22 @@ public class BudgetBar {
 
 	public void setDateStart(String dateStart) {
 		this.dateStart = dateStart;
+	}
+
+	public List<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<String> tags) {
+		this.tags = tags;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	

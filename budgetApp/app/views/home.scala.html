@@ -1,4 +1,4 @@
-@(incomeTags: List[String], expenseTags: List[String], budgets: List[BudgetBar])
+@(incomeTags: List[String], expenseTags: List[String], budgets: List[BudgetBar], incomes: List[Income], expenses: List[Expense])
 
 @import helper._
 
@@ -18,16 +18,16 @@
 		</div>
 		<div class="panel-body">
 		@for(budget <- budgets) {
-			<h4><strong>@budget.getTitle()</strong></h4>
-			@budget.getDateStart() to @budget.getDateEnd() </br>
-			<div class="numberFormat">@budget.getProgress()</div>/<div class="numberFormat">@budget.getAmount()</div>
+			<strong>@budget.getTitle()</strong>
+			<div class="alignRight"><h5>@budget.getDateStart() to @budget.getDateEnd()</h5></div> </br>
+			<h4><div class="numberFormat">@budget.getProgress()</div>/<div class="numberFormat">@budget.getAmount()</div></h4>
 			<div class="progress">
 				<div class="progress-bar progress-bar-info" role="progressbar" aria-valuetransitiongoal="@budget.getProgress()" aria-valuemin="0" aria-valuemax="@budget.getAmount()"></div>
 			</div>
 		}
 		</div>
         <div class="panel-footer">
-            <p class="alignRight"><a href="@routes.Budgets.budgets()"><button type="button" class="btn btn-default btn-lg button2">History</button></a></p>
+            <p class="alignRight"><a href="@routes.Budgets.budgets()"><button type="button" class="btn btn-default btn-lg button2">See All</button></a></p>
         </div>
 	</div>
 	</div>
@@ -44,23 +44,26 @@
                 </div>
                 <table class="table">
                     <tr>
-                        <td><b>Date</b></td>
-                        <td><b>Item</b></td>
-                        <td><b>Category</b></td>
-                        <td><b>Amount</b></td>
+			            <td><b>Date</b></td>
+		         		<td></td>
+			            <td><b>Category</b></td>
+			            <td><b>Amount</b></td>
+			            <td></td>
                     </tr>
-                    <tr>
-                        <td>dd/mm/yy</td>
-                        <td>Item</td>
-                        <td>Category</td>
-                        <td>$xx.xx</td>
-                    </tr>
-                    <tr>
-                        <td>dd/mm/yy</td>
-                        <td>Item</td>
-                        <td>Category</td>
-                        <td>$xx.xx</td>
-                    </tr>
+			    	@for(inc <- incomes) {
+			        <tr>
+			            <td>@inc.date_display</td>
+			            <td>
+			            	@if(inc.scheduler > 0) {
+			            		<span class="glyphicon glyphicon-repeat"></span>
+		            		}
+		            	</td>
+			            <td>@inc.tagName</td>
+			            <td>@inc.amount</td>
+			            <td><a href="@routes.Incomes.showEditIncome(inc.id)"><button type="button" class="btn btn-default btn-xs">Edit</button></a></td>
+			            <td><a href="@routes.Incomes.removeIncome(inc.id)"><button type="button" class="btn btn-default btn-xs">Remove</button></a></td>
+			        </tr>
+			        }
                 </table>
                 <div class="panel-footer">
                     <p class="alignRight"><a href="@routes.Incomes.incomes()"><button type="button" class="btn btn-default btn-lg button2">See All</button></a></p>
@@ -80,22 +83,25 @@
                 <table class="table">
                     <tr>
                         <td><b>Date</b></td>
-                        <td><b>Item</b></td>
-                        <td><b>Category</b></td>
-                        <td><b>Amount</b></td>
+		         		<td></td>
+			            <td><b>Category</b></td>
+			            <td><b>Amount</b></td>
+			            <td></td>
                     </tr>
-                    <tr>
-                        <td>dd/mm/yy</td>
-                        <td>Item</td>
-                        <td>Category</td>
-                        <td>$xx.xx</td>
-                    </tr>
-                    <tr>
-                        <td>dd/mm/yy</td>
-                        <td>Item</td>
-                        <td>Category</td>
-                        <td>$xx.xx</td>
-                    </tr>
+					@for(exp <- expenses) {
+			        <tr>
+			            <td>@exp.date_display</td>
+			            <td>
+			            	@if(exp.scheduler > 0) {
+			            		<span class="glyphicon glyphicon-repeat"></span>
+		            		}
+		            	</td>
+			            <td>@exp.tagName</td>
+			            <td>@exp.amount</td>
+			            <td><a href="@routes.Expenses.showEditExpense(exp.id)"><button type="button" class="btn btn-default btn-xs">Edit</button></a></td>
+			            <td><a href="@routes.Expenses.removeExpense(exp.id)"><button type="button" class="btn btn-default btn-xs">Remove</button></a></td>
+			        </tr>
+			        }
                 </table>
                 <div class="panel-footer">
                     <p class="alignRight"><a href="@routes.Expenses.expenses()"><button type="button" class="btn btn-default btn-lg button2">See All</button></a></p>
@@ -204,7 +210,7 @@
 		        
 				<!-- begin income form -->
 				@form(action = routes.Incomes.addIncome(), 'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkIncomeSubmit(this)", 'role -> "form") {
-				
+				<input type="hidden" name="source" value="home">
 				@formGroup {
 				 		<input type="text" name="income_amount" value="1.00">
 				}

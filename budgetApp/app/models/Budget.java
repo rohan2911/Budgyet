@@ -181,9 +181,11 @@ public class Budget {
 		PreparedStatement ps1 = null;
 		PreparedStatement ps2 = null;
 		PreparedStatement ps3 = null;
+		PreparedStatement psTagNames = null;
 		ResultSet rs1 = null;
 		ResultSet rs2 = null;
 		ResultSet rs3 = null;
+		ResultSet rsTagNames = null;
 		
 		List<BudgetBar> budgetBars = new ArrayList<BudgetBar>();
 		
@@ -199,6 +201,7 @@ public class Budget {
 				bb.setDateStart(rs1.getDate("date_start").toString());
 				bb.setDateEnd(rs1.getDate("date_end").toString());
 				bb.setTitle(rs1.getString("title"));
+				bb.setDescription(rs1.getString("description"));
 				
 				// need to calculate progress here for the budget
 				// 1. get this budget's tags
@@ -239,6 +242,21 @@ public class Budget {
 					totalAmt = totalAmt.add(rs3.getBigDecimal("amount"));
 				}
 				bb.setProgress(totalAmt);
+				
+				// get list of all the tags' names associated with this budget
+				psTagNames = connection.prepareStatement("select et.name from budgets b join budgets_tags_map bt "
+						+ "on bt.budget = b.id join expenses_tags et on bt.tag = et.id "
+						+ "where b.id = ?");
+				psTagNames.setLong(1, bb.getId());
+				rsTagNames = psTagNames.executeQuery();
+				
+				List<String> tagNameList = new ArrayList<String>();	// to store tag names into budgetbar
+				while (rsTagNames.next()) {
+					tagNameList.add(rsTagNames.getString("name"));
+				}
+				
+				// insert list of tags into budgetbar
+				bb.setTags(tagNameList);
 				
 				// insert into list
 				budgetBars.add(bb);

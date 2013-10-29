@@ -1,8 +1,8 @@
-@(income: Income, scheduledIncome: ScheduledIncome, incomeTags: List[String])
+@(expense: Expense, scheduledExpense: ScheduledExpense, expenseTags: List[String])
 
 @import helper._
 
-@main("Edit income | Budgyet") {
+@main("Edit expense | Budgyet") {
 	
 	@navBar("","","")
 	
@@ -11,40 +11,40 @@
     	<div class="row">
 			<div class="panel panel-success">
 				<div class="panel-heading">
-					<h1>Edit Income</h1>
+					<h1>Edit Expense</h1>
 				</div>
 				<div class="panel-body">
 					<div class="modal-body">
-						@form(action = routes.Incomes.editIncome(income.id), 'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkIncomeSubmit(this)", 'role -> "form") {	
+						@form(action = routes.Expenses.editExpense(expense.id), 'id -> "expenseForm", 'class -> "form-horizontal", 'onSubmit -> "return checkExpenseSubmit(this)", 'role -> "form") {	
 							@formGroup {
-						 		<input type="text" name="income_amount" value="@income.amount">
+						 		<input type="text" name="expense_amount" value="@expense.amount">
 							}
 							@formGroup {
-						     	<input type="text" id="income_tags" class="form-control" name="tags" placeholder="New Tags" preTag="@income.tagName">
+						     	<input type="text" id="expense_tags" class="form-control" name="tags" placeholder="New Tags" preTag="@expense.tagName">
 						 	}
 						 	@formGroup {
-						 		@for(tagName <- incomeTags) {
-									<button type="button" class="btn btn-default btn-sm" onclick="addIncomeTag('@tagName')">@tagName</button>
+						 		@for(tagName <- expenseTags) {
+									<button type="button" class="btn btn-default btn-sm" onclick="addExpenseTag('@tagName')">@tagName</button>
 								}			
 							}		
 							@formGroup {
-						 		<div class="input-group date" id="income_datepicker" data-date="@income.date_display" data-date-format="yyyy-mm-dd">
+						 		<div class="input-group date" id="expense_datepicker" data-date="@expense.date_display" data-date-format="yyyy-mm-dd">
 						     		<span class="input-group-addon add-on">
 						       			<i class="glyphicon glyphicon-calendar"></i>
 						     		</span>
-						     		<input type="text" name="income_date" class="form-control" size="16" value="@income.date_display" onclick="$('#income_datepicker').datepicker('show')" readonly>
+						     		<input type="text" name="expense_date" class="form-control" size="16" value="@expense.date_display" onclick="$('#expense_datepicker').datepicker('show')" readonly>
 					    		</div>
 					 		}
 						
 						 	@formGroup {
-						 		<textarea rows="2" name="income_description" class="form-control" maxlength="256" placeholder="Description">@income.description</textarea>
+						 		<textarea rows="2" name="expense_description" class="form-control" maxlength="256" placeholder="Description">@expense.description</textarea>
 						 	}
-						 	@if(income.scheduler > 0) {
+						 	@if(expense.scheduler > 0) {
 						 		<dl>
 							 	@formGroup {
-							 		 <dt><div style="line-height: 2">Repeat</div><dt>
-							 		 <dd>
-								  	<select name="income_repeat" class="selectpicker show-tick show-menu-arrow" repeatVal="@scheduledIncome.period">
+							 		<dt><div style="line-height: 2">Repeat</div><dt>
+							 		<dd>
+								  	<select name="expense_repeat" class="selectpicker show-tick show-menu-arrow" repeatVal="@scheduledExpense.period">
 										<option value="0">Don't Repeat</option>
 										<optgroup label="Repeat">
 											<option value="1">Daily</option>
@@ -56,7 +56,6 @@
 									</dd>
 								}
 								
-								
 								@formGroup {
 									<dt><div style="line-height: 2">Apply changes to</div></dt>
 									<dd>
@@ -67,9 +66,10 @@
 									</dd>
 								}
 								</dl>
+								
 							} else {
 							 	@formGroup {
-								  	<select name="income_repeat" class="selectpicker show-tick show-menu-arrow">
+								  	<select name="expense_repeat" class="selectpicker show-tick show-menu-arrow">
 										<option value="0">Don't Repeat</option>
 										<optgroup label="Repeat">
 											<option value="1">Daily</option>
@@ -82,9 +82,9 @@
 							}
 			        </div>
 				          
-				        <!-- Income modal footer -->
+				        <!-- Expense modal footer -->
 				        <div class="modal-footer">
-				          	<a href="@routes.Incomes.incomes()"><button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button></a>
+				          	<a href="@routes.Expenses.expenses()"><button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button></a>
 				          	<input type="submit" class="btn btn-primary" name="submit" value="Save">
 				        </div>
 						}
@@ -96,7 +96,7 @@
 	<script>
 	 $(document).ready(function() {
 
-        	$("input[name='income_amount']").TouchSpin({
+        	$("input[name='expense_amount']").TouchSpin({
     			min: 0.01,
     			max: 99999999999999.99,
     	        step: 0.1,
@@ -106,13 +106,13 @@
     	        prefix: '$'
     		});
 
-    		$('#income_datepicker').datepicker();
+    		$('#expense_datepicker').datepicker();
 
-    		var preTag = $("#income_tags").attr('preTag');
-    		$("#income_tags").tagsManager({
+    		var preTag = $("#expense_tags").attr('preTag');
+    		$("#expense_tags").tagsManager({
         		prefilled: [preTag],
     			maxTags: 1,
-    			hiddenTagListName: 'income_tag_list'
+    			hiddenTagListName: 'expense_tag_list'
     		});
 
     		$('.selectpicker').selectpicker();
@@ -164,12 +164,12 @@
             });
         });
 
-	 	function addIncomeTag(tag) {
-			$("#income_tags").tagsManager('pushTag', tag);
+	 	function addExpenseTag(tag) {
+			$("#expense_tags").tagsManager('pushTag', tag);
 		}
 
-		function checkIncomeSubmit(f) {
-			if ($("#income_tags").tagsManager('tags').tags.length == 0) {
+		function checkExpenseSubmit(f) {
+			if ($("#expense_tags").tagsManager('tags').tags.length == 0) {
 				alert("Please select at least one tag");
 				return false;
 			} else {

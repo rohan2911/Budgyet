@@ -1,4 +1,4 @@
-@(incomes: List[Income], tagnames: String, tagamounts: String, incomeTags: List[String])
+@(incomes: List[Income], tagnames: String, incometagnames: String, tagamounts: String, incomeTags: List[String])
 
 @import helper._
  
@@ -15,39 +15,10 @@
 			</p>
 			</h1></p>
 		</div>
-		          
-            
-<!-- Filters -->
-	<form class="form-inline" role="form">
-	    <div class="form-group">Filter by: </div>
-	    
-	    <div class="form-group">
-	        <select class="form-control roundedBorder">
-				<option value="" selected disabled>Period</option>
-				<option>Current week</option>
-				<option>Current month</option>
-				<option>Last 31 days</option>
-				<option>Last 60 days</option>
-				<option>Last 90 Days</option>
-				<option>All</option>
-	        </select>
-	    </div>
-	    
-	    <div class="form-group">
-	        <select class="form-control roundedBorder">
-				<option value="" selected disabled>Category</option>
-				<option>Salary</option>
-				<option>Awards</option>
-				<option>Selling</option>
-				<option>All</option>
-	        </select>
-	    </div>
-	</form>
-        
 	<br>
         
    	<!-- Graph -->
-    <div class="pieGraph" title="Income Overview" tags="@tagnames" tagValues="@tagamounts"></div>
+    <div class="pieGraph" title="Income Overview" tags="@incometagnames" tagValues="@tagamounts"></div>
     
    	<br>
    	
@@ -77,6 +48,7 @@
 	            <td>@inc.tagName</td>
 	            <td>@inc.amount</td>
 	            <td><a href="@routes.Incomes.showEditIncome(inc.id)"><button type="button" class="btn btn-default btn-xs">Edit</button></a></td>
+	            <td><a href="@routes.Incomes.removeIncome(inc.id)"><button type="button" class="btn btn-default btn-xs">Remove</button></a></td>
 	        </tr>
 	        }
 	    </table>
@@ -98,7 +70,7 @@
 		        
 				<!-- begin income form -->
 				@form(action = routes.Incomes.addIncome(), 'id -> "incomeForm", 'class -> "form-horizontal", 'onSubmit -> "return checkIncomeSubmit(this)", 'role -> "form") {
-				
+				<input type="hidden" name="source" value="incomes">
 				@formGroup {
 				 		<input type="text" name="income_amount" value="1.00">
 				}
@@ -220,21 +192,20 @@
 
             });
 
-            function addIncomeTag(tag) {
-    			$("#income_tags").tagsManager('pushTag', tag);
-    		}
-
-    		function checkIncomeSubmit(f) {
-    			if ($("#income_tags").tagsManager('tags').tags.length == 0) {
-    				alert("Please select at least one tag");
-    				return false;
-    			} else {
-    				f.submit();
-    				return false;
-    			}
-    		}
         });
-            
+        function addIncomeTag(tag) {
+			$("#income_tags").tagsManager('pushTag', tag);
+		}
+
+		function checkIncomeSubmit(f) {
+			if ($("#income_tags").tagsManager('tags').tags.length == 0) {
+				alert("Please select at least one tag");
+				return false;
+			} else {
+				f.submit();
+				return false;
+			}
+		}   
     </script>
         
 }

@@ -1,6 +1,9 @@
 package controllers;
 
+import java.util.List;
+
 import models.Budget;
+import models.Expense;
 import play.data.DynamicForm;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -32,7 +35,9 @@ public class Budgets extends Controller {
 	}
 	
 	public static Result budgets() {
-		return ok(budgets.render(Budget.getProgressBudgets(session("connected_id"))));
+		List<String> expenseTagNames = Expense.getExpenseTags(session().get("connected_id"));	// get list of expense tag names for graph
+		
+		return ok(budgets.render(Budget.getProgressBudgets(session("connected_id")), expenseTagNames));
 	}
 	
 }
