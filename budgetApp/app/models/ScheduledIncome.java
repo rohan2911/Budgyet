@@ -137,10 +137,10 @@ public class ScheduledIncome {
 	
 	/**
 	 * 
-	 * Scheduled Task is run daily to ensure that scheculed Incomes are added periodically
+	 * Scheduled Task is run daily to ensure that scheduled Incomes are added periodically
 	 * on a user specified period given on creation.
 	 * 
-	 * @return SQL errors (actually nothing atm lol)
+	 * @return success
 	 */
 	
 	public static boolean scheduledTask() {

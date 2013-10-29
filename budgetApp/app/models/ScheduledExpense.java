@@ -137,10 +137,10 @@ public class ScheduledExpense {
 	
 	/**
 	 * 
-	 * Scheduled Task is run daily to ensure that scheculed Expenses are added periodically
+	 * Scheduled Task is run daily to ensure that scheduled Expenses are added periodically
 	 * on a user specified period given on creation.
 	 * 
-	 * @return SQL errors (actually nothing atm lol)
+	 * @return success
 	 */
 	
 	public static boolean scheduledTask() {
@@ -341,7 +341,7 @@ public class ScheduledExpense {
 	 * 
 	 * Updates a scheduled expense and, expense instances created by that scheduled expense
 	 * 
-	 * Expense instances are updated if they were created after the date in the schedueled expense
+	 * Expense instances are updated if they were created after the date in the scheduled expense
 	 * object.
 	 * 
 	 * @param scheduledExpenseId

@@ -30,7 +30,6 @@ public class Accounts extends Controller {
     	if (id != 0) {
     		session("connected_username", username);
     		session("connected_id", Long.toString(id));
-    		// TODO go somewhere useful
     		//return redirect(routes.Application.index());
     		return redirect(routes.Application.index());
     	} else {
@@ -69,7 +68,6 @@ public class Accounts extends Controller {
     		return badRequest(register.render(accountForm));
     	} else {
     		Account.add(accountForm.get());
-    		// TODO add a flash for message indicating successful registration
     		return redirect(routes.Application.index());
     	}
     }

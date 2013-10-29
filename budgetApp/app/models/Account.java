@@ -89,7 +89,6 @@ public class Account {
 	public List<ValidationError> validate() {
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		
-		// TODO CHECK EXISTANCE OF USERNAME AND PASSWORDS
 		
 		if (username.matches("[^\\w]")) {
 			errors.add(new ValidationError("username", "username must contain only letters, digits and underscores"));
@@ -151,7 +150,6 @@ public class Account {
 					connection.close();
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -190,7 +188,6 @@ public class Account {
 					connection.close();
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -227,7 +224,6 @@ public class Account {
 					connection.close();
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -264,7 +260,6 @@ public class Account {
 					connection.close();
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
